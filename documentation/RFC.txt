@@ -1,0 +1,314 @@
+Air Force Institute of Technology (AFIT)                     A. Taglieri
+Request for Comments: 2019                                     C. Badger
+                                                                A. Davis
+                                                                C. Voltz
+                                                              March 2020
+
+
+     Prime Factorization Protocol Version 1: Protocol Specification     
+
+Abstract
+
+   The Prime Factorization Protocol (PFP) is used in the CSCE689 final 
+   project to communicate information between distributed worker nodes 
+   and the user's client which acts as the coordinator.  This document 
+   describes PFPv1 as a draft standard to run across IPv4 and TCP.  It 
+   is open for revision and extension.  
+
+Status of This Memo
+
+   This is an internal AFIT document.  
+
+   This document is a product of Team Prime, in the WI20 CSCE689 course 
+   at AFIT.  It represents the consensus of the Team Prime community.  
+   It has not received review nor been approved for publication by the 
+   AFIT Public Affairs Office (PAO).  
+
+   Information about the current status of this document, any errata, 
+   and how to provide feedback on it may be obtained by leaving an issue
+   in the issue tracker of the github repository at 
+   https://github.com/adtag4/prime.  
+
+
+
+Taglieri, et al.            Internal Document                   [Page 1]
+________________________________________________________________________
+RFC 2019                   PFPv1 Specification                March 2020
+
+
+
+Table of Contents
+
+   1. Introduction
+   2. Definitions
+   3. Types of Endpoints
+      3.1. User Endpoints
+      3.2. Node Endpoints
+   4. Types of Message
+      4.1. Work Request
+      4.2. Work Response
+      4.3. Node Report Request
+      4.4. Node Report Response
+      4.5. Heartbeat Request
+      4.6. Heartbeat Response
+      4.7. Node Announcement
+   5. Data Types
+      5.1. Message Type
+      5.2. Algorithm Type
+      5.3. Algorithm Input
+      5.4. Heartbeat
+      5.5. Node Data
+   6. Security Details
+      6.1. Authentication
+      6.2. Encryption
+   7. Acknowledgments
+
+
+
+Taglieri, et al.            Internal Document                   [Page 2]
+________________________________________________________________________
+RFC 2019                   PFPv1 Specification                March 2020
+
+
+
+1.  Introduction
+
+   This document defines the Prime Factorization Protocol version 1 
+   (PFPv1), which is used to communicate factorization information and 
+   system management details between nodes and clients.  
+
+   PFPv1 works over IPv4 and TCP, and uses encryption and authentication
+   to remain secure.  The main body of this document describes the inner 
+   details of the protocol and data structures necessary for its 
+   operation.  
+
+2.  Definitions
+
+3.  Types of Endpoints
+
+   There are two types of endpoints: nodes and users.  The node endpoint
+   is used to perform work an waits for users to send tasks.  It also 
+   maintains a list of other active nodes as they join and leave the 
+   network.   User endpoints are used to interact with users, and be the
+   central coordinator of active nodes.  
+
+3.1.  User Endpoints
+
+   User endpoints have two functions.  First, they interact with the 
+   user of the software to accept input and provide output.  They are 
+   given a list of active nodes upon launch to connect to.  They 
+   request updates from each node about the current node network, which 
+   allows the list to be updated and gain new nodes which may not be in 
+   the original list.  The endpoint also contains a queue of tasks to be
+   performed by the nodes, and a list of currently executing tasks.  The
+   nodes are monitored by heartbeat requests to maintain activity.  The
+   work replies are received and results utilized to either return the 
+   factors, or spawn more work requests.  In sending work requests and 
+   requesting node details, the user endpoint performs the its second 
+   function of system coordination and management.  
+
+
+
+Taglieri, et al.            Internal Document                   [Page 3]
+________________________________________________________________________
+RFC 2019                   PFPv1 Specification                March 2020
+
+
+
+3.2.  Node Endpoints
+
+   Node endpoints also perform two functions.  First, they communicate  
+   with each other to maintain a current list and status of the 
+   distributed network.  This is done by maintaining heartbeats and 
+   periodic node details requests with every other known node, and 
+   adding nodes when a new one is discovered either by information in 
+   a node details reply, or by being connected to by a node.  Heartbeats
+   are performed every minute for each node, and network updates via 
+   node report requests are performed every fifteen minutes.  Thus, 
+   network updating happens only via a decentralized pull method and not
+   ever by a push method.  This leads to eventual consistency in the 
+   system's network topology.  
+
+   The second function is to perform work as instructed by clients.  A 
+   node contains a list of currently connected clients, and a queue of 
+   tasks to perform.  At most, it will have one task per active user 
+   endpoint.  The top task in the queue is the one actively peformed 
+   until completion, at which point a work response is sent back to the
+   user endpoint from which it came, and the next queued task is begun.
+   The node's working functionality remains idle until tasks are put in 
+   the queue by user endpoints making work requests.  The work request 
+   contains all the necessary information to direct the node in which 
+   algorithm to utilize and the needed input values.  
+
+4.  Types of Message
+
+   There are different types of messages, which perform the different 
+   tasks of the system.  Each is described here, with layout details 
+   shown in a later section.  
+
+
+
+Taglieri, et al.            Internal Document                   [Page 4]
+________________________________________________________________________
+RFC 2019                   PFPv1 Specification                March 2020
+
+
+
+4.1.  Work Request
+
+   The Work Request message is used by a user endpoint to instruct a 
+   node on the network to perform work.  It is message type 1.  It has 
+   first the ALG value, which indicates the algorithm for the node to 
+   use in computation, and then ARGC to indicate the number of input 
+   values for the computation.  Each input value is given as a length 
+   and data.  The length and data are both little-endian.  Length is in
+   bytes, and given as a 4-byte unsigned integer.  
+
+   The list of possible values for ALG are:
+
+                   +-------+-----------------+
+                   | Value | Algorithm       |
+                   +-------+-----------------+
+                   |   0   | Prime Sieve     |
+                   |   1   | Pollard's Rho   |
+                   |   2   | ECM             |
+                   |   3   | P-1             |
+                   |   4   | Quadratic Sieve |
+                   |   5   | SQUFOF          |
+                   |   6   | NFS             |
+                   +-------+-----------------+
+
+   An example work request message is:
+
+      +-----+------+----------+----------------------+
+      | ALG | ARGC | ARG0_LEN |      ARG0_DATA       |
+      +-----+------+----------+----------------------+
+      |  0  |   1  |    32    | 1A52F8........0278B4 |
+      +------------+----------+----------------------+
+
+   The sample relates the request to a node to use its Prime Sieve to 
+   attempt to find factors for the given argument.  There is only one 
+   argument to the Prime Sieve functionality (hence ARGC=1), which has 
+   32 bytes of length (ARG0_LEN=32).  The length of the argument is 
+   followed up by the actual data itself, which in this case is the 
+   number 0xB47802...F8521A (since it is send in little endian).  
+
+
+
+Taglieri, et al.            Internal Document                   [Page 5]
+________________________________________________________________________
+RFC 2019                   PFPv1 Specification                March 2020
+
+
+
+4.2.  Work Response
+
+   The Work Response message is used by a node to return the results of
+   a completed work request to a user endpoint.  It has a similar 
+   structure to the Work Request message, with the amount and names of 
+   values varying based on the results of the work performed, and the 
+   algorithm type.  The user endpoint is responsible for remembering the
+   request that it made, and pairing the response with it.  Since a user
+   endpoint can only have one task on each node endpoint at a time, this
+   ought not be a problem.  The user endpoint is entirely responsible 
+   for handling the return values contained in the work response.   If 
+   the work was successful at completely factoring the target number, it
+   will respond with the additional ALG value of 7, which signifies a 
+   completely performed factorization.  This is then followed by the 
+   number to be factored, and each factor (summing to a total of n+1 
+   values, where n is the number of prime factors).  
+
+4.3.  Node Report Request
+
+   The Node Report Request is a message sent to a node to request what 
+   its current status is.  This can be of three types.  
+
+   The first type of node report request is a grid map update.  This 
+   instructs the node to send its current list of active nodes to the 
+   requesting endpoint.  It encodes these in little-endian format by 
+   sending the amount of nodes, and each with a 4 byte IPv4 address and 
+   port number.  
+
+   The second type of node report request is a solutions update.  This 
+   instructs the node to send its current list of fully factorized 
+   numbers to the requesting endpoint.  Only the numbers themselves are
+   sent, and not the factors.  
+
+   The third type of node report request is a solution request.  This 
+   instructs the node to send the a node report response following the 
+   format of the work response with a completed factorization that 
+   contains the particular factorization of the requested number.  It 
+   returns an error if the requested number is not in its list of 
+   factorized numbers.  
+
+
+
+Taglieri, et al.            Internal Document                   [page 6]
+________________________________________________________________________
+RFC 2019                   PFPv1 Specification                March 2020
+
+
+
+   The first item in the node report request is the type field.  This is
+   a one-byte field with the following values:
+
+                   +-------+------------------+
+                   | Value | Type of Request  |
+                   +-------+------------------+
+                   |   0   | Grid Update      |
+                   |   1   | Solution Update  |
+                   |   2   | Solution Request |
+                   +-------+------------------+
+
+   The grid update does not have any additional arguments, nor does the
+   solution update.  However, the solution request has one argument and 
+   thus the TYPE field is not alone, but followed by a length (4 bytes) 
+   and value, both in little endian and unsigned.  
+
+4.4.  Node Report Response
+
+   TODO
+
+4.5.  Heartbeat Request
+
+   TODO
+
+4.6.  Heartbeat Response
+
+   TODO
+
+4.7.  Node Announcement
+
+   TODO
+
+5.  Data Types
+
+   TODO
+
+Rest of doc: TODO (but the idea should be pretty plain)
+   Note: some details (like arguments, etc) are algorithm 
+         dependent and thus not yet included as I don't 
+         yet know what needs ot be provided for computation!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
