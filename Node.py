@@ -26,12 +26,19 @@ class Node():
         self.socket.accept()
 
     def getWork(self):
-        data = self.socket.recv()
+        data = self.socket.recv(1024)
+        if data == 0:
+            print("Connection lost") #also handle lost connection. make new method
+        dataToParse = data.decode()
         #parse data here
-        return data
+        return dataToParse
 
     def disconnect(self):
         self.socket.close()
+
+    def wrapMessage(self, msg):
+        wrappedmsg = ""
+        return wrappedmsg
 
 
 def main(self):
