@@ -191,7 +191,7 @@ RFC 2019                   PFPv1 Specification                March 2020
    argument to the Prime Sieve functionality (hence ARGC=1), which has 
    32 bytes of length (ARG0_LEN=32).  The length of the argument is 
    followed up by the actual data itself, which in this case is the 
-   number 0xB47802...F8521A (since it is send in little endian).  
+   number 0xB47802...F8521A (since it is sent in little endian).  
 
 
 
