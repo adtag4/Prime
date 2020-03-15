@@ -40,12 +40,14 @@ def main():
 
     port = 9999
 
+    work = input("Please Enter number for factorization: ")
+
     for ip in node_list:
         server_list.append(User(ip, port))
 
     for s in server_list:
         #Parse arguments from command line here, depends on alg
-        s.requestWork("prime factorization number")
+        s.requestWork(work)
 
     notSolved = True
 
