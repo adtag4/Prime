@@ -9,9 +9,6 @@ class Node():
         self.port_num = port
         self.messages = queue
         # make list of other nodes on the network, not sure if are all needed but we shall see
-        self.activeNodeList = []
-        self.activeClientList = []
-        self.clientConnections = []
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             self.socket = s
             s.bind(('', port))
@@ -32,7 +29,6 @@ class Node():
 
     def connectNode(self, ip):
         conn = self.socket.connect((ip, self.port_num))
-        self.activeNodeList.append(ip)
         return conn
 
     def solve(self, conn):
@@ -52,8 +48,6 @@ class Node():
 
         #thread solves it with the new connection on the socket
         t = threading.Thread(target=self.solve, args=(connection,))
-        self.activeClientList.append(client_address)
-        self.clientConnections.append(connection)
         t.start()
 
     def getWork(self, conn):
@@ -77,7 +71,7 @@ class Node():
         return msg
 
 
-def main(self):
+def main():
     # this code is run on each server
     node_list = {'45.76.232.110', '144.202.74.41'}
     peerNodes = []
@@ -101,9 +95,6 @@ def main(self):
         for t in heartbeatThreads:
             if not t.is_alive():
                 t.start()
-
-
-
 
 if __name__ == '__main__':
     main()

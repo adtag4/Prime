@@ -34,7 +34,7 @@ def sendMenu():
     return
 
 def main():
-    node_list = {'45.76.232.110', '144.202.74.41', '0.0.0.0'}
+    node_list = {'45.76.232.110', '144.202.74.41'}
 
     server_list = []
 
