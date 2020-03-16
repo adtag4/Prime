@@ -27,22 +27,28 @@ class Node():
         return self.socket.gethostname()
 
     def connectNode(self, ip):
-        self.socket.connect((ip, self.port_num))
+        conn = self.socket.connect((ip, self.port_num))
         self.activeNodeList.append(ip)
+        return conn
 
     def solve(self, conn):
         # number is the number to be prime factorized
         # replace with the different types of algorithms
-        number = self.getWork(conn)
+        number = self.getWork(conn) #get work calls reciev on the socket
         result = 0
+
+        #send the result and close the socket
         conn.send(str(result).encode())
         conn.close()
         return
 
     def acceptClient(self):
+        #accepts the new clients on the socket, then sends the work in a new thread
         connection, client_address = self.socket.accept()
+
+        #thread solves it with the new connection on the socket
         t = threading.Thread(target=self.solve, args=(connection,))
-        self.activeClientList.append(client_address)  # when you get internet, see if accept() returns something to append to the list
+        self.activeClientList.append(client_address)
         self.clientConnections.append(connection)
         t.start()
 
@@ -58,19 +64,29 @@ class Node():
         self.socket.close()
 
     def wrapMessage(self, msg):
+        #TODO: Figure out this wrapping
         wrappedmsg = ""
         return wrappedmsg
+
+    def parseMessage(self, msg):
+        #TODO: after figuring out wrapping, figure out unwrapping
+        return msg
 
 
 def main(self):
     # this code is run on each server
-    node_list = {'0.0.0.0', '127.0.0.1', '0.0.0.0'}
-    port = 9999
+    node_list = {'45.76.232.110', '144.202.74.41'}
+    peerNodes = []
+    port = 10001
+    port2 = 10002
     node = Node(port)
+
+    #explicity connect the nodes on the same ip with different ports for simulation purposes
+    #peerNodes.append(node.connectNode(node2))
 
     for currNode in node_list:  # connect every node to every other node
         if currNode != node.returnIP():  # check to make sure ip isnt the node's ip
-            node.connectNode(currNode)
+            peerNodes.append(node.connectNode(currNode))
 
     # listen for new connections from clients, send messages to other nodes as needed
     while True:

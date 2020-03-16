@@ -34,11 +34,11 @@ def sendMenu():
     return
 
 def main():
-    node_list = {'0.0.0.0', '127.0.0.1'}
+    node_list = {'45.76.232.110', '144.202.74.41', '0.0.0.0'}
 
     server_list = []
 
-    port = 9999
+    port = 10001
 
     work = input("Please Enter number for factorization: ")
 
