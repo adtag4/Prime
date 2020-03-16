@@ -1,18 +1,17 @@
 import socket
-import queue
 import threading
-
+import time
 
 class Node():
 
     def __init__(self, port):
         self.port_num = port
-        self.messages = queue
         # make list of other nodes on the network, not sure if are all needed but we shall see
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            self.socket = s
-            s.bind(('', port))
-            s.listen()
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = s
+        s.settimeout(.01)
+        s.bind(('', port))
+        s.listen()
 
     def heartbeat(self, conn):
         # send out messages to the other nodes, make sure they are still alive
@@ -25,11 +24,17 @@ class Node():
             return True
 
     def returnIP(self):
-        return self.socket.gethostname()
+        host = socket.gethostname()
+        ip = socket.gethostbyname(host)
+        return ip
 
     def connectNode(self, ip):
-        conn = self.socket.connect((ip, self.port_num))
-        return conn
+        try:
+            conn = self.socket.connect((ip, self.port_num))
+        except socket.timeout:
+            print("timeout")
+            time.sleep(1)
+        return
 
     def solve(self, conn):
         # number is the number to be prime factorized
@@ -77,12 +82,12 @@ def main():
     peerNodes = []
     port = 10001
     node = Node(port)
-
     #explicity connect the nodes on the same ip with different ports for simulation purposes
 
     for currNode in node_list:  # connect every node to every other node
         if currNode != node.returnIP():  # check to make sure ip isnt the node's ip
             peerNodes.append(node.connectNode(currNode))
+            time.sleep(3)
 
     # listen for new connections from clients, send messages to other nodes as needed
     heartbeatThreads = []
