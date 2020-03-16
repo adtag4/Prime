@@ -7,8 +7,8 @@ class Node():
 
     def __init__(self, port):
         self.port_num = port
-        self.messages = queue  # not sure if this is right, feel free to replace. we just want a message queue
-        # make list of other nodes on the network
+        self.messages = queue
+        # make list of other nodes on the network, not sure if are all needed but we shall see
         self.activeNodeList = []
         self.activeClientList = []
         self.clientConnections = []
@@ -17,11 +17,15 @@ class Node():
             s.bind(('', port))
             s.listen()
 
-    def heartbeat(self):
+    def heartbeat(self, conn):
         # send out messages to the other nodes, make sure they are still alive
-        for node in self.activeNodeList:
-            self.socket.send("heartbeat".encode())
-        return
+        conn.setTimeout(60)
+        conn.send("heartbeat".encode())
+        data = conn.recv(1024).decode()
+        if data == 0:
+            return False
+        else:
+            return True
 
     def returnIP(self):
         return self.socket.gethostname()
@@ -78,19 +82,27 @@ def main(self):
     node_list = {'45.76.232.110', '144.202.74.41'}
     peerNodes = []
     port = 10001
-    port2 = 10002
     node = Node(port)
 
     #explicity connect the nodes on the same ip with different ports for simulation purposes
-    #peerNodes.append(node.connectNode(node2))
 
     for currNode in node_list:  # connect every node to every other node
         if currNode != node.returnIP():  # check to make sure ip isnt the node's ip
             peerNodes.append(node.connectNode(currNode))
 
     # listen for new connections from clients, send messages to other nodes as needed
+    heartbeatThreads = []
+    for c in peerNodes:
+        heartbeatThreads.append(threading.Thread(target=node.heartbeat, args=(c,)))
+
+
     while True:
         node.acceptClient()
+        for t in heartbeatThreads:
+            if not t.is_alive():
+                t.start()
+
+
 
 
 if __name__ == '__main__':
