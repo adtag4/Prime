@@ -1,3 +1,4 @@
+#include <vector>
 #include "Client.h"
 
 // If a client is initialized with an IP to connect to
@@ -47,6 +48,35 @@ int Client::createSocket()
 
 void Client::setWork(int newwork){
     _work = newwork;
+}
+
+std::vector<std::string> Client::parsestr (std::string s) {
+    size_t pos_start = 0, pos_end, delim_len = _delimiter.length();
+    std::string token;
+    std::vector<std::string> res;
+
+    while ((pos_end = s.find (_delimiter, pos_start)) != std::string::npos) {
+        token = s.substr (pos_start, pos_end - pos_start);
+        pos_start = pos_end + delim_len;
+        if (token != "")
+            res.push_back (token);
+    }
+
+    //res.push_back (s.substr (pos_start));
+    return res;
+}
+
+
+std::string Client::createMsg (int alg, int argc, int arglen, std::string algdata){
+    std::string totalmsg;
+    totalmsg.append(reinterpret_cast<const char *>(alg));
+    totalmsg.append(_delimiter);
+    totalmsg.append(reinterpret_cast<const char *>(argc));
+    totalmsg.append(_delimiter);
+    totalmsg.append(reinterpret_cast<const char *>(arglen));
+    totalmsg.append(_delimiter);
+    totalmsg.append(algdata);
+    return  totalmsg;
 }
 
 /*****************************************************************************

@@ -24,12 +24,14 @@ public:
 	int connected();
 	int shutdown();
 	void setWork(int);
-
+    std::vector<std::string> parsestr (std::string);
+    std::string createMsg (int, int, int, std::string);
 
 protected:
 
 private:
     int _work;
+    std::string _delimiter = "#";
    	std::string _svrIP;
 	int _port;
 	int _sock;

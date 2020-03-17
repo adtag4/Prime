@@ -26,11 +26,13 @@ public:
 	int setupCSocket();
 	int serverWork(sockaddr_in client, int clientSocket);
 	int shutdown();
+    std::vector<std::string> parsestr (std::string);
+    std::string createMsg (int, int, int, std::string);
 
 protected:
 
 private:
-
+    std::string _delimiter;
 	std::string _svrIP;
 	int _port;
 	int _listening;
