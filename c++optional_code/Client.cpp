@@ -23,7 +23,7 @@ Client::~Client()
 int Client::createSocket()
 {
 	// create socket
-	_sock = socket(AF_INET, SOCK_STREAM, 0);
+	_sock = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	if(_sock == -1)
 	{
 		std::cerr << "Can't create socket" << std::endl;
@@ -45,60 +45,53 @@ int Client::createSocket()
 	return 0;
 }
 
+void Client::setWork(int newwork){
+    _work = newwork;
+}
+
 /*****************************************************************************
  * connected() - Loops through and performs actions until time to disconnect 
  * 
  * 
 ******************************************************************************/
-int Client::connected()
-{
-	// do while loop to send and receive data
-	int finished = 0;
-	char buf[_msgSize];
-	std::string userInput;
-	do
-	{
-		std::cout << "> "; 
-		getline(std::cin, userInput);
-		if(userInput.compare("quit") == 0)
-		{
-			finished = 1;
-			break;
-		}
-	
-		int sendRes = send(_sock, userInput.c_str(), userInput.size() + 1, 0);
-		//std::cout << "Printing number of bytes sent: " << send(_sock, userInput.c_str(), userInput.size() + 1, 0) << std::endl;
-		// check if failed
-		if(sendRes == -1)
-		{
-			std::cout << "Failed to send to server." << std::endl;
-			continue; // skip the rest of the loop and try again
-		}
-	
-		// wait for response
-		memset(buf, 0, _msgSize); // zero the buffer out
-		int bytesReceived = recv(_sock, buf, _msgSize, 0);
-		// check and see if the sender sent more than buf space
-		if(bytesReceived == _msgSize)
-		{
-			// TODO:potentially parse data and see if there is more useful
-			// for now just 0 out buffer
-			std::cout << "Received too much info, very scary" << std::endl;
-			while(bytesReceived > 0)
-			{
-				memset(buf, 0, _msgSize); // zero the buffer out again
-				bytesReceived = recv(_sock, buf, _msgSize, 0); 
-			}
-		}	
-		else
-		{
-			// display the response
-			std::cout << "Server> " << std::string(buf, bytesReceived) << std::endl;
-		}
+int Client::connected() {
+    // do while loop to send and receive data
+    int finished = 0;
+    char buf[_msgSize];
+    std::string userInput;
+    do {
+        int sendRes = send(_sock, (char *) _work, sizeof(_work) + 1, 0);
 
-	}while(finished != 1);	
-	return 0;
+        if (sendRes == -1) {
+            std::cout << "Failed to send to server." << std::endl;
+            shutdown();
+        } else {
+            std::cout << "work sent to " << _svrIP;
+        }
+
+        // wait for response
+        memset(buf, 0, _msgSize); // zero the buffer out
+        int bytesReceived = recv(_sock, buf, _msgSize, 0);
+        // check and see if the sender sent more than buf space
+        if (bytesReceived == _msgSize) {
+            // TODO:potentially parse data and see if there is more useful
+            // for now just 0 out buffer
+            std::cout << "Received too much info, very scary" << std::endl;
+            while (bytesReceived > 0) {
+                memset(buf, 0, _msgSize); // zero the buffer out again
+                bytesReceived = recv(_sock, buf, _msgSize, 0);
+            }
+        } else {
+            // display the response, assuming will be int or something of the like
+            std::string response = std::string(buf, bytesReceived);
+            std::cout << "Server> " << response << std::endl;
+            return std::stoi(response);
+        }
+
+    }while (finished != -1);
+    return 0;
 }
+
 
 /*****************************************************************************
  * shutdown() - Cleanup and shutdown

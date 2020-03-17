@@ -23,11 +23,13 @@ public:
 	int createSocket();
 	int connected();
 	int shutdown();
+	void setWork(int);
+
 
 protected:
 
 private:
-
+    int _work;
    	std::string _svrIP;
 	int _port;
 	int _sock;

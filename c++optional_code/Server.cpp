@@ -9,7 +9,7 @@ Server::Server(std::string serverIP, int port) : _svrIP(serverIP), _port(port)
 }
 
 // Constructor for if no IP is connected (assume connect to local)
-Server::Server() : _svrIP("127.0.0.1"), _port(54000)
+Server::Server() : _svrIP("127.0.0.1"), _port(9999)
 {
 	// create a thread that does the listening 
 	tPool.emplace_back(std::thread([this]{createLSocket();}));
@@ -68,7 +68,7 @@ int Server::setupCSocket()
 	char svc[NI_MAXSERV];
 
 	std::cout << "Waiting for Connection" << std::endl;
-	clientSocket = accept(_listening, (sockaddr*) &client, &clientSize);
+	clientSocket = accept4(_listening, (sockaddr*) &client, &clientSize, SOCK_NONBLOCK);
 	if(clientSocket == -1)
 	{
 		std::cerr << "Problem with client connecting";
