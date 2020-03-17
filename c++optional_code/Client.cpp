@@ -24,7 +24,7 @@ Client::~Client()
 int Client::createSocket()
 {
 	// create socket
-	_sock = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+	_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if(_sock == -1)
 	{
 		std::cerr << "Can't create socket" << std::endl;
@@ -34,10 +34,13 @@ int Client::createSocket()
 	// fill in hint structure 
 	_hint.sin_family = AF_INET;
 	_hint.sin_port = htons(_port);
-	inet_pton(AF_INET, _svrIP.c_str(), &_hint.sin_addr);
+	if(inet_pton(AF_INET, _svrIP.c_str(), &_hint.sin_addr) <= 0){
+        std::cerr << "Invalid address/ Address not supported\n";
+        return -1;
+    }
 
 	// connect to server 
-	int connResult = connect(_sock, (sockaddr*)&_hint, sizeof(_hint));
+	int connResult = connect(_sock, (struct sockaddr*)&_hint, sizeof(_hint));
 	if(connResult == -1)
 	{
 		std::cerr << "Can't connect to server, Err #" << std::strerror(errno)  << std::endl;
@@ -90,7 +93,7 @@ int Client::connected() {
     char buf[_msgSize];
     std::string userInput;
     do {
-        int sendRes = send(_sock, (char *) _work, sizeof(_work) + 1, 0);
+        int sendRes = send(_sock, (char *) _work, strlen((char*)_work) + 1, 0);
 
         if (sendRes == -1) {
             std::cout << "Failed to send to server." << std::endl;
