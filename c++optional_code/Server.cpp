@@ -35,7 +35,7 @@ int Server::createLSocket()
 	// bind the socket to an IP
 
 	_hint.sin_family = AF_INET;
-	_hint.sin_port = htons(54000);
+	_hint.sin_port = htons(_port);
 	inet_pton(AF_INET, "0.0.0.0", &_hint.sin_addr); // 0.0.0.0 puts on any IP
 	if(bind(_listening, (sockaddr*) &_hint, sizeof(_hint)) == -1)
 	{

@@ -33,6 +33,7 @@ int main()
     std::vector<int> ports = {9999, 9998};
     std::string server = "127.0.0.1";
     for (const auto& p : ports) {
+	std::cout << "Connecting on:" << server << " Port " << p << std::endl;
         std::unique_ptr<Client> c = std::make_unique<Client>(server, p);
         c->createSocket();
         c->setWork(std::stoi(userInput));
