@@ -1,6 +1,6 @@
 // algorithm.cpp
 
-#include "algorithm.h"
+#include "algorithm/algorithm.h"
 
 namespace alg
 {
@@ -19,7 +19,7 @@ alg::INT extendedEuclid(alg::INT a, alg::INT n, alg::INT& x, alg::INT& y)
 	alg::INT yStored("0");
 	alg::INT g = extendedEuclid(n % a, a, xStored, yStored);
 
-	x = yStored - ((b / a) * xStored);
+	x = yStored - ((n / a) * xStored);
 	y = xStored;
 
 	return g;

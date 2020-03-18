@@ -17,8 +17,8 @@ typedef mpz_class INT;
 class AlgStateData // abstract class - varies per alg
 {
 	public:
-		AlgStateData();
-		~AlgStateData();
+		AlgStateData() {};
+		~AlgStateData() {};
 
 		// provide char array encoding of state
 		virtual char *encode() = 0;
@@ -29,9 +29,9 @@ class AlgStateData // abstract class - varies per alg
 class Algorithm // abstract class - varies per alg
 {
 	public:
-		Algorithm();
+		Algorithm() {};
 		//Algorithm(InitStateData initialState)
-		~Algorithm();
+		~Algorithm() {};
 
 		// run one step of it
 		virtual void proceed() = 0;
