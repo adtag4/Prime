@@ -19,12 +19,10 @@ class PollardState : public alg::AlgStateData
 		PollardState(char *encoding) // for reversing encoding
 
 		char	*encode()	override;
-	protected:
-	private:
-		alg::INT	x;
-		alg::INT	y;
-		alg::INT	d;
-		alg::INT	n;
+		alg::INT	x_;
+		alg::INT	y_;
+		alg::INT	d_;
+		alg::INT	n_;
 };
 
 class Pollard : public alg::Algorithm
@@ -36,12 +34,13 @@ class Pollard : public alg::Algorithm
 		// use this instead
 		Pollard(PollardState& startState);
 
-		void 		proceed()	override;
+		void		proceed()	override;
 		bool 		foundFactor()	override;
 		AlgStateData&	currentState()	override;
 	protected:
 	private:
-		PollardState	current;
+		virtual alg::INT	g(alg::INT x, alg::INT n);
+		PollardState		current;
 };
 
 }
