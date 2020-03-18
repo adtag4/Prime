@@ -4,6 +4,8 @@
 #include "algorithm/pollard.h"
 
 #include <string>
+namespace alg
+{
 
 /***********************************************
  *        PollardState Functions               *
@@ -30,39 +32,39 @@ PollardState::PollardState(alg::INT n, alg::INT x, alg::INT y, alg::INT d)
 // CODE ASSUMES THAT INPUT WAS GIVEN BY PollardState::encode()
 PollardState::PollardState(char *encoding)
 {
-	uint32_t *iPtr = encoding;
+	uint32_t *iPtr = (uint32_t*)encoding;
 	
 	uint32_t tLen = *iPtr; // total len is first 4 bytes of encoded state
 	
-	uint32_t nLen = iPtr[1] // next 4 bytes
+	uint32_t nLen = iPtr[1]; // next 4 bytes
 
 	auto nPtr = encoding + 8;
 	char tmp = nPtr[nLen];
 	nPtr[nLen] = 0; // make null temporarily for string ops
-	n_(nPtr);
+	n_ = alg::INT(std::string(nPtr));
 	nPtr[nLen] = tmp;
 	
 	nPtr = nPtr + nLen;
-	iPtr = static_cast<uint32_t *>(nPtr);
+	iPtr = (uint32_t *)nPtr;
 	nPtr = nPtr + 4;
 	nLen = *iPtr;
 	tmp = nPtr[nLen];
 	nPtr[nLen] = 0;
-	d_(nPtr);
+	d_ = alg::INT(std::string(nPtr));
 	nPtr[nLen] = tmp;
 
 	nPtr = nPtr + nLen;
-	iPtr = static_cast<uint32_t *>(nPtr);
+	iPtr = (uint32_t *)nPtr;
 	nPtr = nPtr + 4;
 	nLen = *iPtr;
 	tmp = nPtr[nLen];
 	nPtr[nLen] = 0;
-	x_(nPtr);
+	x_ = alg::INT(std::string(nPtr));
 	nPtr[nLen] = tmp;
 
 	// y is last, followed by a null so we don't need to worry about it
 	nPtr = nPtr + nLen + 4;
-	y_(nPtr);
+	y_ = alg::INT(std::string(nPtr));
 }
 
 // encodes in format of TOTAL_LEN|nLEN|n|dLEN|d|xLEN|x|yLEN|y|\0
@@ -80,7 +82,7 @@ char *PollardState::encode()
 
 	uint32_t totalLen = nLen + dLen + xLen + yLen + 16; // +16 for len of 4 lens (4 bytes each)
 	
-	char *msg = calloc(1, totalLen + 5); // +5 for totalLen length and null byte at end
+	char *msg = (char*)calloc(1, totalLen + 5); // +5 for totalLen length and null byte at end
 
 	int q = 0; // current write location
 	*((uint32_t *) msg + q) = totalLen;
@@ -167,15 +169,15 @@ void Pollard::proceed()
 	}
 
 
-	current.x_ = g(current.x_);
-	current.y_ = g(g(current.y_));
-	if(x > y)
+	current.x_ = g(current.x_, current.n_);
+	current.y_ = g(g(current.y_, current.n_), current.n_);
+	if(current.x_ > current.y_)
 	{
-		current.d_ = alg::gcd((x - y), n);
+		current.d_ = alg::gcd((current.x_ - current.y_), current.n_);
 	}
 	else
 	{
-		current.d_ = alg::gcd((y - x), n);
+		current.d_ = alg::gcd((current.y_ - current.x_), current.n_);
 	}
 }
 
@@ -191,4 +193,5 @@ bool Pollard::foundFactor()
 AlgStateData& Pollard::currentState()
 {
 	return current;
+}
 }

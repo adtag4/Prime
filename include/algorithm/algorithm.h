@@ -52,7 +52,7 @@ template <typename A>
 char *runXTimes(int x, A a)
 {
 	int i = 0;
-	for(while i < x)
+	while (i < x)
 	{
 		a.proceed();
 		i++;
