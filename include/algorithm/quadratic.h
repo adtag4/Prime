@@ -21,27 +21,6 @@
 namespace alg
 {
 
-class QuadSieveState : public AlgStateData
-{
-	public:
-		QuadSieveState() {}; // DONT USE
-		~QuadSieveState() {};
-		
-		QuadSieveState(alg::INT n, int nbLinRels)
-			: n_(n),
-			  nbLinRels_(nbLinRels),
-			  factor_("0")
-		{};
-
-		alg::INT	n_;
-		int		nbLinRels_;
-		alg::INT	factor_;
-	protected:
-		void encode(std::ostream& out) override;
-		void decode(std::istream& in)  override;
-
-};
-
 class QuadSieve : public Algorithm
 {
 	public:

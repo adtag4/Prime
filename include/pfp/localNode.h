@@ -15,32 +15,11 @@
 #include <arpa/inet.h>
 // potentially another to dns resolve
 
+#include "pfp/pfp.h"
+#include "algorithm/algorithm.h"
+
 namespace pfp
 {
-
-enum class ALG {PR, ECM, QS};
-
-class WorkOrder
-{
-	public:
-		WorkOrder() {};
-		~WorkOrder() {};
-		
-		WorkOrder(pfp::ALG algorithm, std::string encodedState);
-
-		pfp::ALG	getAlgorithm();
-		std::string	getEncodedState();
-		pfp::remoteUser	getSource();
-
-		void		setSource(pfp::remoteUser source);
-		void 		encode(ostream& out);
-		void		decode(istream& in);
-	protected:
-	private:
-		pfp::ALG	algorithm_;
-		std::string	encodedState_;
-		pfp::remoteUser	source_;
-}
 
 class localNode
 {
