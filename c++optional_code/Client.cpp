@@ -7,7 +7,7 @@ Client::Client(std::string serverIP, int port) : _svrIP(serverIP), _port(port)
 }
 
 // Constructor for if no IP is connected (assume connect to local)
-Client::Client() : _svrIP("127.0.0.1"), _port(54000)
+Client::Client() : _svrIP("127.0.0.1"), _port(9999)
 {
 }
 
@@ -127,6 +127,10 @@ int Client::connected() {
 
     }while (finished != -1);
     return 0;
+}
+
+int Client::getSockNum(){
+    return _sock;
 }
 
 

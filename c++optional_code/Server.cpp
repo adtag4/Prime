@@ -9,7 +9,7 @@ Server::Server(std::string serverIP, int port) : _svrIP(serverIP), _port(port)
 }
 
 // Constructor for if no IP is connected (assume connect to local)
-Server::Server() : _svrIP("127.0.0.1"), _port(9999)
+Server::Server() : _svrIP("127.0.0.1"), _port(9998)
 {
     // create a thread that does the listening
     tPool.emplace_back(std::thread([this]{createLSocket();}));

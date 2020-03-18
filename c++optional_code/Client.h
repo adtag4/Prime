@@ -25,6 +25,7 @@ public:
 	int connected();
 	int shutdown();
 	void setWork(int);
+	int getSockNum();
     std::vector<std::string> parsestr (std::string);
     std::string createMsg (int, int, int, std::string);
 
