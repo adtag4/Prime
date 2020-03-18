@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <string.h>
+#include <vector>
 #include <arpa/inet.h>
 #include <cerrno>
 #include <cstring>
@@ -24,6 +25,7 @@ public:
 	int connected();
 	int shutdown();
 	void setWork(int);
+	int getSockNum();
     std::vector<std::string> parsestr (std::string);
     std::string createMsg (int, int, int, std::string);
 

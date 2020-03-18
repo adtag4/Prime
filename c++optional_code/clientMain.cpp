@@ -4,6 +4,7 @@
 #include <thread>
 #include <future>
 
+
 int doWork(std::unique_ptr<Client> c){
     return c->connected();
 }
@@ -33,14 +34,15 @@ int main()
     std::vector<int> ports = {9999, 9998};
     std::string server = "127.0.0.1";
     for (const auto& p : ports) {
-	std::cout << "Connecting on:" << server << " Port " << p << std::endl;
+	    std::cout << "Connecting on:" << server << " Port " << p << std::endl;
         std::unique_ptr<Client> c = std::make_unique<Client>(server, p);
         c->createSocket();
         c->setWork(std::stoi(userInput));
+        int socketToClose = c->getSockNum();
         std::future<int> fut = std::async(doWork, std::move(c));
         int response = fut.get();
         std::cout << response;
-        c->shutdown();
+        close(socketToClose);
     }
 
 	return 0;
