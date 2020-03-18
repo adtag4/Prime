@@ -1,6 +1,6 @@
 CC=g++
 
-CPP_OPTS=-std=c++17
+CPP_OPTS=-std=c++17 -ggdb
 LIBS=-lpthread #-lgmp -lgmpxx
 
 

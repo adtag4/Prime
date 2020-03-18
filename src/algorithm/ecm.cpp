@@ -1,7 +1,7 @@
 // ecm.cpp
 
 #include "algorithm/algorithm.h"
-#include "ecm/ecm.h"
+#include "algorithm/ecm.h"
 
 namespace alg
 {
@@ -24,7 +24,7 @@ void Point::setCurve(EllipticCurve *curve)
 
 Point Point::add(Point& p)
 {
-	if(curve == nullptr)
+	if(curve_ == nullptr)
 	{
 		throw p; // seriously, you shouldn't end up here.  Don't forget to set the curve
 	}
@@ -35,7 +35,7 @@ Point Point::add(Point& p)
 	// adding points:
 	if((x_ == p.x_) && (y_ == p.y_)) // adding P+P
 	{
-		numerator 	= alg::INT("3") * x_ * x_ + curve_.b_;
+		numerator 	= alg::INT("3") * x_ * x_ + curve_->b_;
 		denominator 	= alg::INT("2") * y_;
 	}
 	else // adding different points
@@ -44,7 +44,7 @@ Point Point::add(Point& p)
 		denominator	= p.x_ = x_;
 	}
 
-	if(demoninator == alg::INT("0")) // m is infinite :(
+	if(denominator == alg::INT("0")) // m is infinite :(
 	{
 		throw 0; 
 		// if infinite, result is the point infinity which can't be done anything with
@@ -53,10 +53,10 @@ Point Point::add(Point& p)
 	}
 
 	alg::INT inv("0");
-	if(alg::inverse(denominator, curve_.n_, inv)) // inverse exists, calculate next point
+	if(alg::inverse(denominator, curve_->n_, inv)) // inverse exists, calculate next point
 	{
-		alg::INT m = (numerator * inv) % curve_.n_;
-		alg::INT newX = (m * m) - x_ i p.x_;
+		alg::INT m = (numerator * inv) % curve_->n_;
+		alg::INT newX = (m * m) - x_ - p.x_;
 		alg::INT newY = (m * (x_ - p.x_)) - newX;
 		Point q(newX, newY);
 		q.setCurve(curve_);
@@ -80,7 +80,7 @@ Point Point::operator + (Point& p)
  *****************************************/
 
 // construct curve based on input point and b (and n)
-EllipticCurve::EllipticCurve(Point& p, alg::INT b, alg::INT n)
+EllipticCurve::EllipticCurve(PrePoint& p, alg::INT b, alg::INT n)
 {
 	/* Elliptic curves are of format y^2 = x^3 + b*x + c (mod n)
 	 *   We have simplified finding a curve and point on the 
@@ -97,7 +97,7 @@ EllipticCurve::EllipticCurve(Point& p, alg::INT b, alg::INT n)
 	c_ = testC;
 }
 
-EllipticCurve(alg::INT b, alg::INT c, alg::INT n)
+EllipticCurve::EllipticCurve(alg::INT b, alg::INT c, alg::INT n)
 	: b_(b),
 	  c_(c),
 	  n_(n)
@@ -150,7 +150,7 @@ void ECM::proceed()
 	{
 		try
 		{
-			current_.newP = current.newP + current_.p;
+			current_.newP_ = current_.newP_ + current_.p_;
 		}
 		catch (alg::INT factor)
 		{

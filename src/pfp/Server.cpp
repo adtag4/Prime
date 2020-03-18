@@ -1,24 +1,20 @@
 #include "Server.h"
-#include "pollard.h"
+#include "algorithm/pollard.h"
 
 // If a client is initialized with an IP to connect to
 Server::Server(std::string serverIP, int port) : _svrIP(serverIP), _port(port)
 {
     // create a thread that does the listening
-    std::thread lThread(&Server::createLSocket, this); 
-    std::cout << "Created Listener Socket" << std::endl;
-    lThread.join();
+    tPool.emplace_back(std::thread([this]{createLSocket();}));
 
 }
 
 // Constructor for if no IP is connected (assume connect to local)
-Server::Server() : _svrIP("127.0.0.1"), _port(10000)
+Server::Server() : _svrIP("127.0.0.1"), _port(9998)
 {
     // create a thread that does the listening
-    //tPool.emplace_back(std::thread([this]{createLSocket();}));
-    std::thread lThread(&Server::createLSocket, this); 
+    tPool.emplace_back(std::thread([this]{createLSocket();}));
     std::cout << "Created Listener Socket" << std::endl;
-    lThread.join(); // this pauses the main thread and joins once lThread does it's job
 }
 
 // Client Desctuctor
@@ -59,7 +55,6 @@ std::string Server::createMsg (int alg, int argc, int arglen, std::string algdat
 
 int Server::createLSocket()
 {
-    std::cout << "START CREATELSOCKET" << std::endl;
     // Create a socket
     _listening = socket(AF_INET, SOCK_STREAM, 0);
     if(_listening == -1)
@@ -84,7 +79,6 @@ int Server::createLSocket()
         std::cerr << "Server can't listen";
         return -1;
     }
-    std::cout << "PRINT BEFORE LOOP DEBUG" << std::endl;
     while(_shutdown != 1)
     {
         setupCSocket();
@@ -175,7 +169,8 @@ int Server::serverWork(sockaddr_in client, int clientSocket)
     }
     // close client socket
     close(clientSocket);
-    // Internet says that it closes thread by itself here 
+    // close the thread TODO: does this need to do anything or will it get cleaned up?
+    //std::this_thread.join();
 
 
 }
