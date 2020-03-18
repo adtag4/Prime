@@ -31,34 +31,34 @@ class QuadSieveState : public AlgStateData
 			  nbLinRels_(nbLinRels),
 			  factor_("0")
 		{};
-	protected:
-		void encode(ostream& out) override;
-		void decode(istream& in)  override;
 
-	private:
 		alg::INT	n_;
 		int		nbLinRels_;
 		alg::INT	factor_;
-}
+	protected:
+		void encode(std::ostream& out) override;
+		void decode(std::istream& in)  override;
+
+};
 
 class QuadSieve : public Algorithm
 {
 	public:
-		QuadSieve() {}; // DONT USE
+		QuadSieve() : current_(), qsMachine_(alg::INT("2019"), 5) {}; // DONT USE
 		~QuadSieve() {};
 		
 		QuadSieve(QuadSieveState& startState) 
-			: current_(startState)
+			: current_(startState),
+			  qsMachine_(current_.n_, current_.nbLinRels_)
 		{
 			// creates qs evaluation machine
 			// NOTE: THE "QS" CLASS IS FROM github.com/martani/Quadratic-Sieve-Cxx
-			qsMachine = QS(current_.n_, current_.nbLinRels_);
 
 			// since evaluation is single-shot, not progressive, start here
-			qsMachine.Factor();
+			qsMachine_.Factor();
 		};
 
-		void proceed() {} override; // all is done in QS when this class is constructed
+		void proceed() override {}; // all is done in QS when this class is constructed
 
 		bool foundFactor() override;
 
@@ -71,7 +71,7 @@ class QuadSieve : public Algorithm
 		QuadSieveState	current_;
 		QS		qsMachine_;
 		
-}
+};
 
 
 

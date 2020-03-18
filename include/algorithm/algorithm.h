@@ -22,11 +22,11 @@ class AlgStateData // abstract class - varies per alg
 		~AlgStateData() {};
 
 		// provide char array encoding of state
-		friend ostream& operator << (ostream& out, alg::AlgStateData& data);
-		friend istream& operator >> (istream& in,  alg::AlgStateData& data);
+		friend std::ostream& operator << (std::ostream& out, alg::AlgStateData& data);
+		friend std::istream& operator >> (std::istream& in,  alg::AlgStateData& data);
 	protected:
-		virtual void encode(ostream& out) = 0;
-		virtual void decode(istream& in)  = 0;
+		virtual void encode(std::ostream& out) = 0;
+		virtual void decode(std::istream& in)  = 0;
 	private:
 };
 
@@ -53,7 +53,7 @@ class Algorithm // abstract class - varies per alg
 
 // returns encoded result of running algorithm x times
 template <typename A>
-void runXTimes(ostream& out, int x, A a)
+void runXTimes(std::ostream& out, int x, A a)
 {
 	int i = 0;
 	while (i < x)
@@ -76,5 +76,5 @@ alg::INT gcd(alg::INT a, alg::INT b);
 
 }
 
-ostream& operator << (ostream& out, alg::AlgStateData& data);
-istream& operator << (istream& in,  alg::AlgStateData& data);
+std::ostream& operator << (std::ostream& out, alg::AlgStateData& data);
+std::istream& operator << (std::istream& in,  alg::AlgStateData& data);

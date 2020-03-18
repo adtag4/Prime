@@ -28,8 +28,8 @@ class PrePoint
 		alg::INT x_;
 		alg::INT y_;
 		
-		friend ostream& operator << (ostream& out, alg::PrePoint& data);
-		friend istream& operator >> (istream& in,  alg::PrePoint& data);
+		friend std::ostream& operator << (std::ostream& out, alg::PrePoint& data);
+		friend std::istream& operator >> (std::istream& in,  alg::PrePoint& data);
 
 };
 
@@ -46,8 +46,8 @@ class EllipticCurve
 		alg::INT c_;
 		alg::INT n_;
 
-		friend ostream& operator << (ostream& out, alg::EllipticCurve& data);
-		friend istream& operator >> (istream& in,  alg::EllipticCurve& data);
+		friend std::ostream& operator << (std::ostream& out, alg::EllipticCurve& data);
+		friend std::istream& operator >> (std::istream& in,  alg::EllipticCurve& data);
 };
 
 class Point
@@ -67,8 +67,8 @@ class Point
 		Point add(Point& p);
 		Point operator+(Point& p);
 
-		friend ostream& operator << (ostream& out, alg::Point& data);
-		friend istream& operator >> (istream& in,  alg::Point& data);
+		friend std::ostream& operator << (std::ostream& out, alg::Point& data);
+		friend std::istream& operator >> (std::istream& in,  alg::Point& data);
 };
 
 
@@ -87,8 +87,8 @@ class ECMState : public AlgStateData
 		alg::INT	factor_; // for if a factor is found (0 if not)
 
 	protected:
-		void encode(ostream& out) override;
-		void decode(istream& in)  override;
+		void encode(std::ostream& out) override;
+		void decode(std::istream& in)  override;
 };
 
 class ECM : public alg::Algorithm
@@ -112,11 +112,11 @@ class ECM : public alg::Algorithm
 }
 
 // global namespace
-ostream& operator << (ostream& out, alg::PrePoint& data);
-istream& operator >> (istream& in,  alg::PrePoint& data);
+std::ostream& operator << (std::ostream& out, alg::PrePoint& data);
+std::istream& operator >> (std::istream& in,  alg::PrePoint& data);
 
-ostream& operator << (ostream& out, alg::EllipticCurve& data);
-istream& operator >> (istream& in,  alg::EllipticCurve& data);
+std::ostream& operator << (std::ostream& out, alg::EllipticCurve& data);
+std::istream& operator >> (std::istream& in,  alg::EllipticCurve& data);
 
-ostream& operator << (ostream& out, alg::Point& data);
-istream& operator >> (istream& in,  alg::Point& data);
+std::ostream& operator << (std::ostream& out, alg::Point& data);
+std::istream& operator >> (std::istream& in,  alg::Point& data);

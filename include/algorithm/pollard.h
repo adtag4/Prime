@@ -24,8 +24,8 @@ class PollardState : public alg::AlgStateData
 		alg::INT	n_;
 
 	protected:
-		void encode(ostream& out) override;
-		void decode(istream& in)  override;
+		void encode(std::ostream& out) override;
+		void decode(std::istream& in)  override;
 };
 
 class Pollard : public alg::Algorithm
