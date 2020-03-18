@@ -18,11 +18,14 @@ class PollardState : public alg::AlgStateData
 		PollardState(alg::INT n, alg::INT x, alg::INT y, alg::INT d); // for ongoing
 		PollardState(char *encoding); // for reversing encoding
 
-		char	*encode()	override;
 		alg::INT	x_;
 		alg::INT	y_;
 		alg::INT	d_;
 		alg::INT	n_;
+
+	protected:
+		void encode(ostream& out) override;
+		void decode(istream& in)  override;
 };
 
 class Pollard : public alg::Algorithm

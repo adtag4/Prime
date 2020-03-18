@@ -60,3 +60,17 @@ alg::INT gcd(alg::INT a, alg::INT b)
 }
 
 }
+
+// global namespace
+ostream& operator << (ostream& out, alg::AlgStateData& data)
+{
+	data.encode(out);
+	return out;
+}
+
+istream& operator >> (istream& in, alg::AlgStateData& data)
+{
+	data.decode(in);
+	return in;
+}
+

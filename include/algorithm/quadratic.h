@@ -31,8 +31,9 @@ class QuadSieveState : public AlgStateData
 			  nbLinRels_(nbLinRels),
 			  factor_("0")
 		{};
-
-		char *encode() override;
+	protected:
+		void encode(ostream& out) override;
+		void decode(istream& in)  override;
 
 	private:
 		alg::INT	n_;

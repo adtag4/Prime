@@ -27,6 +27,9 @@ class PrePoint
 
 		alg::INT x_;
 		alg::INT y_;
+		
+		friend ostream& operator << (ostream& out, alg::PrePoint& data);
+		friend istream& operator >> (istream& in,  alg::PrePoint& data);
 
 };
 
@@ -42,6 +45,9 @@ class EllipticCurve
 		alg::INT b_;
 		alg::INT c_;
 		alg::INT n_;
+
+		friend ostream& operator << (ostream& out, alg::EllipticCurve& data);
+		friend istream& operator >> (istream& in,  alg::EllipticCurve& data);
 };
 
 class Point
@@ -60,6 +66,9 @@ class Point
 
 		Point add(Point& p);
 		Point operator+(Point& p);
+
+		friend ostream& operator << (ostream& out, alg::Point& data);
+		friend istream& operator >> (istream& in,  alg::Point& data);
 };
 
 
@@ -71,14 +80,15 @@ class ECMState : public AlgStateData
 		~ECMState() {};
 
 		ECMState(Point p, Point p2, EllipticCurve curve);
-		ECMState(char *encoding); // allows decoding of encoded state
-		
-		char *encode() override;
 		
 		Point		p_;	 // basis point
 		Point		newP_;	 // product of basis (coef irrelevant)
 		EllipticCurve	curve_;	 // curve point is on
 		alg::INT	factor_; // for if a factor is found (0 if not)
+
+	protected:
+		void encode(ostream& out) override;
+		void decode(istream& in)  override;
 };
 
 class ECM : public alg::Algorithm
@@ -100,3 +110,13 @@ class ECM : public alg::Algorithm
 
 
 }
+
+// global namespace
+ostream& operator << (ostream& out, alg::PrePoint& data);
+istream& operator >> (istream& in,  alg::PrePoint& data);
+
+ostream& operator << (ostream& out, alg::EllipticCurve& data);
+istream& operator >> (istream& in,  alg::EllipticCurve& data);
+
+ostream& operator << (ostream& out, alg::Point& data);
+istream& operator >> (istream& in,  alg::Point& data);

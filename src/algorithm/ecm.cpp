@@ -110,7 +110,7 @@ EllipticCurve::EllipticCurve(alg::INT b, alg::INT c, alg::INT n)
  *          ECMState functions            *
  ******************************************/
 
-ECMState::ECMState(Point p, Point p2, EllipticCurve curve)
+ECMState::ECMState(Point p, Point p2, EllipticCurve *curve)
 	: p_(p),
 	  newP_(p2),
 	  curve_(curve),
@@ -120,17 +120,19 @@ ECMState::ECMState(Point p, Point p2, EllipticCurve curve)
 	newP_.setCurve(&curve_);
 }
 
-ECMState::ECMState(char *encoding)
+void ECMState::encode(ostream& out)
 {
-	// needs to decode 2 points (x and y for both), an elliptic curve (b, c, and n), and a factor
-	// all data types of those are alg::INT
-	// stream operators recommended with a separator (like '.') b/c the one for pollard is kinda ugly
-	// and we can rely on TCP to complete transmission - not the concern at this 'layer' of comms
+	out << p_ << ' ' << newP_ << ' ' << *curve_ << ' ' << factor_ << '\n';
 }
 
-char *ECMState::encode()
+void ECMState::decode(istream& in)
 {
-	// same TODO as above, in reverse
+	in >> p_ >> newP_;
+	curve_ = new EllipticCurve();
+	in >> *curve_;
+	in >> factor_;
+	p_.setCurve(curve_);
+	newP.setCurve(curve_);
 }
 
 
@@ -180,4 +182,42 @@ AlgStateData& ECM::currentState()
 }
 
 
+}
+
+// global
+
+ostream& operator << (ostream& out, alg::PrePoint& data)
+{
+	out << data.x_ << ' ' << data.y_;
+	return out;
+}
+
+istream& operator >> (istream& in, alg::PrePoint& data)
+{
+	in >> data.x_ >> data.y_;
+	return in;
+}
+
+ostream& operator << (ostream& out, alg::EllipticCurve& data)
+{
+	out << data.b_ << ' ' << data.c_ << ' ' << data.n_;
+	return out;
+}
+
+istream& operator >> (istream& in, alg::EllipticCurve& data)
+{
+	in >> data.b_ >> data.c_ >> data.n_;
+	return in;
+}
+
+ostream& operator << (ostream& out, alg::Point& data)
+{
+	out << data.x_ << ' ' << data.y_;
+	return out;
+}
+
+istream& operator >> (istream& in, alg::Point& data)
+{
+	in >> data.x_ >> data.y_;
+	return in;
 }

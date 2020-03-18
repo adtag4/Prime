@@ -23,6 +23,16 @@ bool QuadSieve::foundFactor()
 	}
 }
 
+void QuadSieveState::encode(ostream& out)
+{
+	out << n_ << ' ' << nbLinRels_ << ' ' << factor_;
+}
+
+void QuadSieveState::decode(istream& in)
+{
+	in >> n_ >> nbLinRels_ >> factor_;
+}
+
 AlgStateData& QuadSieve::currentState()
 {
 	return current_;

@@ -2,10 +2,11 @@
 
 #pragma once
 
-// according to good practice: this should not be here.  For convenienve :)
+// according to good practice: this should not be here.  For convenience since it all uses these...:)
 #include <gmp.h>
 #include <gmpxx.h>
 
+#include <iostream>
 
 
 namespace alg
@@ -21,8 +22,11 @@ class AlgStateData // abstract class - varies per alg
 		~AlgStateData() {};
 
 		// provide char array encoding of state
-		virtual char *encode() = 0;
+		friend ostream& operator << (ostream& out, alg::AlgStateData& data);
+		friend istream& operator >> (istream& in,  alg::AlgStateData& data);
 	protected:
+		virtual void encode(ostream& out) = 0;
+		virtual void decode(istream& in)  = 0;
 	private:
 };
 
@@ -49,7 +53,7 @@ class Algorithm // abstract class - varies per alg
 
 // returns encoded result of running algorithm x times
 template <typename A>
-char *runXTimes(int x, A a)
+void runXTimes(ostream& out, int x, A a)
 {
 	int i = 0;
 	while (i < x)
@@ -57,16 +61,20 @@ char *runXTimes(int x, A a)
 		a.proceed();
 		i++;
 
-		if(a.foundFactor)
+		if(a.foundFactor())
 		{
-			return a.currentState().encode();
+			break;
 		}
 	}
-	return a.currentState.encode();
+	out << a.currentState();
 }
 
 // gets mod inverse (return true) or gcd (return false)
 //   result (inv or gcd) stored in dst
 bool inverse(alg::INT a, alg::INT n, alg::INT& dst);
 alg::INT gcd(alg::INT a, alg::INT b);
+
 }
+
+ostream& operator << (ostream& out, alg::AlgStateData& data);
+istream& operator << (istream& in,  alg::AlgStateData& data);
