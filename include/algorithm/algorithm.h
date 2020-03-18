@@ -65,4 +65,8 @@ char *runXTimes(int x, A a)
 	return a.currentState.encode();
 }
 
+// gets mod inverse (return true) or gcd (return false)
+//   result (inv or gcd) stored in dst
+bool inverse(alg::INT a, alg::INT n, alg::INT& dst);
+alg::INT gcd(alg::INT a, alg::INT b);
 }
