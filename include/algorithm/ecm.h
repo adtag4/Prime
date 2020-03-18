@@ -64,7 +64,7 @@ class Point
 		void setCurve(EllipticCurve *curve);
 		EllipticCurve* curve_;
 
-		Point add(Point& p);
+		Point add(const Point& p);
 		Point operator+(Point& p);
 
 		friend std::ostream& operator << (std::ostream& out, alg::Point& data);

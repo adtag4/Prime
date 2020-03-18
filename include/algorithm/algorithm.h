@@ -53,7 +53,7 @@ class Algorithm // abstract class - varies per alg
 
 // returns encoded result of running algorithm x times
 template <typename A>
-void runXTimes(std::ostream& out, int x, A a)
+void runXTimes(std::ostream& out, int x, A& a)
 {
 	int i = 0;
 	while (i < x)
@@ -66,7 +66,7 @@ void runXTimes(std::ostream& out, int x, A a)
 			break;
 		}
 	}
-	out << a.currentState();
+	out << a.currentState() << std::endl;
 }
 
 // gets mod inverse (return true) or gcd (return false)

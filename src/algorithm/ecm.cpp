@@ -22,10 +22,13 @@ void Point::setCurve(EllipticCurve *curve)
 	curve_ = curve;
 }
 
-Point Point::add(Point& p)
+Point Point::add(const Point& p)
 {
 	if(curve_ == nullptr)
 	{
+		//DEBUG
+		std::cout << "You done messed up A-Aron - curve_==nullptr in Point::add()" << std::endl;
+
 		throw p; // seriously, you shouldn't end up here.  Don't forget to set the curve
 	}
 	
@@ -35,15 +38,30 @@ Point Point::add(Point& p)
 	// adding points:
 	if((x_ == p.x_) && (y_ == p.y_)) // adding P+P
 	{
+		// DEBUG
+		std::cout << "\tAdding point to self." << std::endl;
+
 		numerator 	= alg::INT("3") * x_ * x_ + curve_->b_;
 		denominator 	= alg::INT("2") * y_;
+
 	}
 	else // adding different points
 	{
+		// DEBUG
+		std::cout << "\tAdding different points." << std::endl;
+
 		numerator	= p.y_ - y_;
-		denominator	= p.x_ = x_;
+		denominator	= p.x_ - x_;
 	}
 
+	// ensure positive:
+	numerator = (numerator + curve_->n_) % curve_->n_;
+	denominator = (denominator + curve_->n_) % curve_->n_;
+
+	//DEBUG
+	std::cout << "\tM num: " << numerator << std::endl;
+	std::cout << "\tM den: " << denominator << std::endl;
+	
 	if(denominator == alg::INT("0")) // m is infinite :(
 	{
 		throw 0; 
@@ -55,15 +73,28 @@ Point Point::add(Point& p)
 	alg::INT inv("0");
 	if(alg::inverse(denominator, curve_->n_, inv)) // inverse exists, calculate next point
 	{
+		// DEBUG
+		std::cout << "\tFound inverse, m: ";
+
 		alg::INT m = (numerator * inv) % curve_->n_;
+
+		//DEBUG
+		std::cout << m << std::endl;
+
+
 		alg::INT newX = (m * m) - x_ - p.x_;
-		alg::INT newY = (m * (x_ - p.x_)) - newX;
+		newX = ((newX % curve_->n_) + curve_->n_) % curve_->n_ ;
+		alg::INT newY = (m * (x_ - newX)) - y_;
+		newY = ((newY % curve_->n_) + curve_->n_) % curve_->n_;
 		Point q(newX, newY);
 		q.setCurve(curve_);
 		return q;
 	}
 	else // inverse doesn't exist, throw the new factor
 	{
+		// DEBUG
+		std::cout << "\tNo inverse, gcd: " << inv << std::endl;
+
 		throw inv; // the gcd
 	}
 
@@ -72,6 +103,9 @@ Point Point::add(Point& p)
 // hehehe - <insert evil laugh here>
 Point Point::operator + (Point& p)
 {
+	// DEBUG
+	std::cout << "Adding " << *this << " + " << p << std::endl;
+	
 	return add(p);
 }
 
@@ -147,15 +181,27 @@ ECM::ECM(ECMState& startState)
 
 void ECM::proceed()
 {
+	//DEBUG
+	std::cout << "Start of proceed(): " << currentState() << std::endl;
+
 	if(current_.factor_ == alg::INT("0"))
 	{
 		try
 		{
+			//DEBUG
+			std::cout << "base: " << current_.p_ << std::endl;
+			std::cout << "oldP: " << current_.newP_ << std::endl;
+			
 			current_.newP_ = current_.newP_ + current_.p_;
+			
+			//DEBUG
+			std::cout << "base: " << current_.p_ << std::endl;
+			std::cout << "newP: " << current_.newP_ << std::endl << std::endl;
 		}
 		catch (alg::INT factor)
 		{
 			current_.factor_ = factor;
+			return;
 		}
 		catch (int stop)
 		{
@@ -163,7 +209,12 @@ void ECM::proceed()
 			current_.factor_ = alg::INT("-1"); // -1 means failure
 			return;
 		}
+		//DEBUG
+		std::cout << "No error/factor caught" << std::endl;
 	}
+
+	//DEBUG
+	std::cout << "End of proceed(): " << currentState() << std::endl;
 }
 
 bool ECM::foundFactor()

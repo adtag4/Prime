@@ -10,13 +10,12 @@ namespace alg
 class PollardState : public alg::AlgStateData
 {
 	public:
-		PollardState(); //delete default ctor
-		~PollardState();
+		PollardState() {}; //delete default ctor
+		~PollardState() {};
 
 		// use this one
 		PollardState(alg::INT n); // for initial 
 		PollardState(alg::INT n, alg::INT x, alg::INT y, alg::INT d); // for ongoing
-		PollardState(char *encoding); // for reversing encoding
 
 		alg::INT	x_;
 		alg::INT	y_;
@@ -31,8 +30,8 @@ class PollardState : public alg::AlgStateData
 class Pollard : public alg::Algorithm
 {
 	public:
-		Pollard(); // don't use default ctors silly
-		~Pollard();
+		Pollard() {}; // don't use default ctors silly
+		~Pollard() {};
 
 		// use this instead
 		Pollard(PollardState& startState);
