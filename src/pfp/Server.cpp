@@ -1,5 +1,5 @@
 #include "Server.h"
-#include "pollard.h"
+#include "algorithm/pollard.h"
 
 // If a client is initialized with an IP to connect to
 Server::Server(std::string serverIP, int port) : _svrIP(serverIP), _port(port)

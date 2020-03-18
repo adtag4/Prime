@@ -1,5 +1,5 @@
-#include "Client.h"
-#include "pollard.h"
+#include "pfp/Client.h"
+#include "algorithm/pollard.h"
 #include <memory>
 #include <vector>
 #include <thread>
