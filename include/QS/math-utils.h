@@ -5,7 +5,7 @@
  *      Author: sky
  *      Copyright martani 2013
  */
-
+#pragma once
 
 #ifndef MATH_UTILS_H_
 #define MATH_UTILS_H_
@@ -32,6 +32,6 @@ public:
 };
 
 
-#include "../../src/QS/math-utils.C"
+//#include "../../src/QS/math-utils.C"
 
 #endif //MATH_UTILS_H_

@@ -4,6 +4,7 @@
  *  Created on: Feb 21, 2013
  *      Author: sky
  */
+#pragma once
 
 #ifndef QS_H_
 #define QS_H_
@@ -70,5 +71,5 @@ public:
 };
 
 
-#include "../../src/QS/QS.C"
+//#include "../../src/QS/QS.C"
 #endif /* QS_H_ */

@@ -13,7 +13,8 @@
 
 
 #pragma once
-
+#ifndef Q_H
+#define Q_H
 #include "algorithm/algorithm.h"
 #include "QS/QS.h"
 
@@ -76,4 +77,6 @@ class QuadSieve : public Algorithm
 
 
 }
+
+#endif
 

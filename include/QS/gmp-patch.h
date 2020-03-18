@@ -12,6 +12,6 @@
 
 extern "C" int mpz_sqrtm(mpz_t q, const mpz_t n, const mpz_t p);
 
-#include "../../src/QS/gmp-patch.c"
+//#include "../../src/QS/gmp-patch.c"
 
 #endif /* GMP_PATCH_H_ */

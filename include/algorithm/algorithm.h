@@ -74,7 +74,7 @@ void runXTimes(std::ostream& out, int x, A a)
 bool inverse(alg::INT a, alg::INT n, alg::INT& dst);
 alg::INT gcd(alg::INT a, alg::INT b);
 
-}
-
 std::ostream& operator << (std::ostream& out, alg::AlgStateData& data);
 std::istream& operator << (std::istream& in,  alg::AlgStateData& data);
+
+}

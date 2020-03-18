@@ -5,6 +5,7 @@
  *      Author: sky
  *      Copyright martani 2013
  */
+#pragma once 
 
 #ifndef SMOOTH_BASE_H_
 #define SMOOTH_BASE_H_

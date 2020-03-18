@@ -30,13 +30,13 @@ PollardState::PollardState(alg::INT n, alg::INT x, alg::INT y, alg::INT d)
 }
 
 
-void PollardState::encode(ostream& out)
+void PollardState::encode(std::ostream& out)
 {
 	out << x_ << ' ' << y_ << ' ' << d_ << ' ' << n_;
 }
 
 
-void PollardState::decode(istream& in)
+void PollardState::decode(std::istream& in)
 {
 	in >> x_ >> y_ >> d_ >> n_;
 }

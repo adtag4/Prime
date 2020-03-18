@@ -3,17 +3,17 @@
 #include "algorithm/algorithm.h"
 #include "algorithm/quadratic.h"
 
+#include "../QS/QS.C"
+#include "../QS/eratosthenes.C"
+#include "../QS/gmp-patch.c"
+#include "../QS/math-utils.C"
+
 namespace alg
 {
 
-char *QuadSieveState::encode()
-{
-	//TODO
-}
-
 bool QuadSieve::foundFactor()
 {
-	if(qsMachine_.GetFactor1() == 1 || qsMachine.GetFactor1() == current_.n_)
+	if(qsMachine_.GetFactor1() == 1 || qsMachine_.GetFactor1() == current_.n_)
 	{
 		return false;
 	}
@@ -23,12 +23,12 @@ bool QuadSieve::foundFactor()
 	}
 }
 
-void QuadSieveState::encode(ostream& out)
+void QuadSieveState::encode(std::ostream& out)
 {
 	out << n_ << ' ' << nbLinRels_ << ' ' << factor_;
 }
 
-void QuadSieveState::decode(istream& in)
+void QuadSieveState::decode(std::istream& in)
 {
 	in >> n_ >> nbLinRels_ >> factor_;
 }

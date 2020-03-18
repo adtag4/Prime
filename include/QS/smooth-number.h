@@ -4,6 +4,7 @@
  *  Created on: Jan 13, 2013
  *      Author: sky
  */
+#pragma once
 
 #ifndef SMOOTH_NUMBER_H_
 #define SMOOTH_NUMBER_H_

@@ -110,7 +110,7 @@ EllipticCurve::EllipticCurve(alg::INT b, alg::INT c, alg::INT n)
  *          ECMState functions            *
  ******************************************/
 
-ECMState::ECMState(Point p, Point p2, EllipticCurve *curve)
+ECMState::ECMState(Point p, Point p2, EllipticCurve curve)
 	: p_(p),
 	  newP_(p2),
 	  curve_(curve),
@@ -120,19 +120,18 @@ ECMState::ECMState(Point p, Point p2, EllipticCurve *curve)
 	newP_.setCurve(&curve_);
 }
 
-void ECMState::encode(ostream& out)
+void ECMState::encode(std::ostream& out)
 {
-	out << p_ << ' ' << newP_ << ' ' << *curve_ << ' ' << factor_ << '\n';
+	out << p_ << ' ' << newP_ << ' ' << curve_ << ' ' << factor_ << '\n';
 }
 
-void ECMState::decode(istream& in)
+void ECMState::decode(std::istream& in)
 {
 	in >> p_ >> newP_;
-	curve_ = new EllipticCurve();
-	in >> *curve_;
+	in >> curve_;
 	in >> factor_;
-	p_.setCurve(curve_);
-	newP.setCurve(curve_);
+	p_.setCurve(&curve_);
+	newP_.setCurve(&curve_);
 }
 
 
@@ -181,43 +180,40 @@ AlgStateData& ECM::currentState()
 	return current_;
 }
 
-
-}
-
-// global
-
-ostream& operator << (ostream& out, alg::PrePoint& data)
+std::ostream& operator << (std::ostream& out, alg::PrePoint& data)
 {
 	out << data.x_ << ' ' << data.y_;
 	return out;
 }
 
-istream& operator >> (istream& in, alg::PrePoint& data)
+std::istream& operator >> (std::istream& in, alg::PrePoint& data)
 {
 	in >> data.x_ >> data.y_;
 	return in;
 }
 
-ostream& operator << (ostream& out, alg::EllipticCurve& data)
+std::ostream& operator << (std::ostream& out, alg::EllipticCurve& data)
 {
 	out << data.b_ << ' ' << data.c_ << ' ' << data.n_;
 	return out;
 }
 
-istream& operator >> (istream& in, alg::EllipticCurve& data)
+std::istream& operator >> (std::istream& in, alg::EllipticCurve& data)
 {
 	in >> data.b_ >> data.c_ >> data.n_;
 	return in;
 }
 
-ostream& operator << (ostream& out, alg::Point& data)
+std::ostream& operator << (std::ostream& out, alg::Point& data)
 {
 	out << data.x_ << ' ' << data.y_;
 	return out;
 }
 
-istream& operator >> (istream& in, alg::Point& data)
+std::istream& operator >> (std::istream& in, alg::Point& data)
 {
 	in >> data.x_ >> data.y_;
 	return in;
+}
+
 }

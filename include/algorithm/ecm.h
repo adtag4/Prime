@@ -109,9 +109,6 @@ class ECM : public alg::Algorithm
 };
 
 
-}
-
-// global namespace
 std::ostream& operator << (std::ostream& out, alg::PrePoint& data);
 std::istream& operator >> (std::istream& in,  alg::PrePoint& data);
 
@@ -120,3 +117,5 @@ std::istream& operator >> (std::istream& in,  alg::EllipticCurve& data);
 
 std::ostream& operator << (std::ostream& out, alg::Point& data);
 std::istream& operator >> (std::istream& in,  alg::Point& data);
+
+}

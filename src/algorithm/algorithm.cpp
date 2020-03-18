@@ -59,18 +59,16 @@ alg::INT gcd(alg::INT a, alg::INT b)
 	return alg::gcd(b%a, a);
 }
 
-}
-
-// global namespace
-ostream& operator << (ostream& out, alg::AlgStateData& data)
+std::ostream& operator << (std::ostream& out, alg::AlgStateData& data)
 {
 	data.encode(out);
 	return out;
 }
 
-istream& operator >> (istream& in, alg::AlgStateData& data)
+std::istream& operator >> (std::istream& in, alg::AlgStateData& data)
 {
 	data.decode(in);
 	return in;
 }
 
+}

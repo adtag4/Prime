@@ -5,6 +5,7 @@
  *      Author: martani
  *      Copyright martani 2013
  */
+#pragma once
 
 #ifndef UTILS_H_
 #define UTILS_H_

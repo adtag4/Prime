@@ -62,6 +62,6 @@ public:
 };
 
 
-#include "../../src/QS/eratosthenes.C"
+//#include "../../src/QS/eratosthenes.C"
 
 #endif	//ERATOSTHENES_H_
