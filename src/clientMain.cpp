@@ -1,5 +1,5 @@
-#include "Client.h"
-#include "pollard.h"
+#include "pfp/Client.h"
+#include "algorithm/pollard.h"
 #include <memory>
 #include <vector>
 #include <thread>
@@ -58,7 +58,6 @@ int main()
     }
 /*
     std::vector<int> ports = {9999, 9998};
->>>>>>> 255e5b9ea159e75f01113c9103f1dadb032fa013
     std::string server = "127.0.0.1";
     for (const auto& p : ports) {
 	    std::cout << "Connecting on:" << server << " Port " << p << std::endl;

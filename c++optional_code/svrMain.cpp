@@ -27,12 +27,14 @@ int main(int argc, char *argv[])
 		std::cout << "Using default port" << std::endl;
     		Server s;
 	}
-	
-
 }
+	
+    //Server s("155.138.235.233", 10000);
+
     /*
+     * setup for node to node connection???
     std::vector<Server> nodes;
-    std::vector<std::string> ips = {"45.76.232.110", "144.202.74.41"};
+    std::vector<std::string> ips = {"45.76.232.110", "144.202.74.41", "155.138.235.233"};
 	Server s("127.0.0.1", 9999);
 
 	for (const auto& server : ips) {
