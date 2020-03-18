@@ -1,5 +1,8 @@
 // ecm.cpp
 
+#include "algorithm/algorithm.h"
+#include "ecm/ecm.h"
+
 namespace alg
 {
 
@@ -72,6 +75,10 @@ Point Point::operator + (Point& p)
 	return add(p);
 }
 
+/*****************************************
+ *     EllipticCurve functions           *
+ *****************************************/
+
 // construct curve based on input point and b (and n)
 EllipticCurve::EllipticCurve(Point& p, alg::INT b, alg::INT n)
 {
@@ -96,6 +103,80 @@ EllipticCurve(alg::INT b, alg::INT c, alg::INT n)
 	  n_(n)
 {
 	
+}
+
+
+/******************************************
+ *          ECMState functions            *
+ ******************************************/
+
+ECMState::ECMState(Point p, Point p2, EllipticCurve curve)
+	: p_(p),
+	  newP_(p2),
+	  curve_(curve),
+	  factor_("0")
+{
+	p_.setCurve(&curve_);
+	newP_.setCurve(&curve_);
+}
+
+ECMState::ECMState(char *encoding)
+{
+	// needs to decode 2 points (x and y for both), an elliptic curve (b, c, and n), and a factor
+	// all data types of those are alg::INT
+	// stream operators recommended with a separator (like '.') b/c the one for pollard is kinda ugly
+	// and we can rely on TCP to complete transmission - not the concern at this 'layer' of comms
+}
+
+char *ECMState::encode()
+{
+	// same TODO as above, in reverse
+}
+
+
+/******************************************
+ *             ECM functions              *
+ ******************************************/
+
+ECM::ECM(ECMState& startState)
+	: current_(startState)
+{
+	
+}
+
+void ECM::proceed()
+{
+	if(current_.factor_ == alg::INT("0"))
+	{
+		try
+		{
+			current_.newP = current.newP + current_.p;
+		}
+		catch (alg::INT factor)
+		{
+			current_.factor_ = factor;
+		}
+		catch (int stop)
+		{
+			// if here, in a cycle
+			current_.factor_ = alg::INT("-1"); // -1 means failure
+			return;
+		}
+	}
+}
+
+bool ECM::foundFactor()
+{
+	if(current_.factor_ == 0)
+	{
+		return false; // not done
+	}
+	return true; // done either success or failure
+}
+
+AlgStateData& ECM::currentState()
+{
+	return current_;
 }
 
 

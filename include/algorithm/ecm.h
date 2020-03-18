@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "algorithm.h"
+#include "algorithm/algorithm.h"
 
 namespace alg
 {
@@ -48,8 +48,8 @@ class EllipticCurve
 class ECMState : public AlgStateData
 {
 	public:
-		ECMState();
-		~ECMState();
+		ECMState() {};
+		~ECMState() {};
 
 		ECMState(Point p, Point p2, EllipticCurve curve);
 		ECMState(char *encoding); // allows decoding of encoded state
@@ -65,8 +65,8 @@ class ECMState : public AlgStateData
 class ECM : public alg::Algorithm
 {
 	public:
-		ECM();
-		~ECM();
+		ECM() {}; // DONT USE THIS... but c++ hates deleted default constructors :(
+		~ECM() {};
 		ECM(ECMState& startState);
 
 		// functionality
