@@ -62,12 +62,6 @@ class localNode
 		// called by handleClient() if other is a user 
 		void handleUser(int userSocket, struct sockaddr_in userAddr);
 
-		// called by handleClient() if other is a node
-		void handleNode(int nodeSocket, struct sockaddr_in nodeAddr);
-
-		// thread to update network_
-		void heartbeat();
-
 		// thread to perform work
 		void work();
 
