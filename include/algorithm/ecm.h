@@ -13,6 +13,37 @@ namespace alg
 //	ret true if inverse, false if gcd
 bool inverse(alg::INT a, alg::INT n, alg::INT& dst);
 
+class PrePoint
+{
+	public:
+		PrePoint() {}; // never use default ctors!
+		~PrePoint() {};
+
+		PrePoint(alg::INT x, alg::INT y)	
+			: x_(x),
+	  		  y_(y)
+			 {
+			 };
+
+		alg::INT x_;
+		alg::INT y_;
+
+};
+
+class EllipticCurve
+{
+	public:
+		EllipticCurve() {}; // still never use default ctors!
+		~EllipticCurve() {};
+
+		EllipticCurve(PrePoint& p, alg::INT b, alg::INT n);
+		EllipticCurve(alg::INT b, alg::INT c, alg::INT n);
+
+		alg::INT b_;
+		alg::INT c_;
+		alg::INT n_;
+};
+
 class Point
 {
 	public:
@@ -28,22 +59,10 @@ class Point
 		EllipticCurve* curve_;
 
 		Point add(Point& p);
-		operator+(Point& p);
-}
+		Point operator+(Point& p);
+};
 
-class EllipticCurve
-{
-	public:
-		EllipticCurve() {}; // still never use default ctors!
-		~EllipticCurve() {};
 
-		EllipticCurve(Point& p, alg::INT b, alg::INT n);
-		EllipticCurve(alg::INT b, alg::INT c, alg::INT n);
-
-		alg::INT b_;
-		alg::INT c_;
-		alg::INT n_;
-}
 
 class ECMState : public AlgStateData
 {
@@ -54,13 +73,13 @@ class ECMState : public AlgStateData
 		ECMState(Point p, Point p2, EllipticCurve curve);
 		ECMState(char *encoding); // allows decoding of encoded state
 		
-		void char *encode() override;
+		char *encode() override;
 		
 		Point		p_;	 // basis point
 		Point		newP_;	 // product of basis (coef irrelevant)
 		EllipticCurve	curve_;	 // curve point is on
 		alg::INT	factor_; // for if a factor is found (0 if not)
-}
+};
 
 class ECM : public alg::Algorithm
 {
@@ -77,7 +96,7 @@ class ECM : public alg::Algorithm
 		AlgStateData&	currentState()	override; // returns ECMState current_
 
 		ECMState	current_;
-}
+};
 
 
 }

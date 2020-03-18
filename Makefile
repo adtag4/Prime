@@ -6,7 +6,7 @@ INC=-Iinclude
 
 all: node user
 
-node: src/node_main.cpp src/pfp/localNode.cpp src/pfp/remoteNode.cpp src/pfp/pfp.cpp src/pfp/remoteUser.cpp src/algorithm/pollard.cpp src/algorithm/algorithm.cpp
+node: src/node_main.cpp src/pfp/localNode.cpp src/pfp/remoteNode.cpp src/pfp/pfp.cpp src/pfp/remoteUser.cpp src/algorithm/pollard.cpp src/algorithm/algorithm.cpp src/algorithm/ecm.cpp
 	$(CC) -o $@ $^ $(CPP_OPTS) $(LIBS) $(INC)
 
 user: 
