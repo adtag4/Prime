@@ -1,13 +1,34 @@
 #include "Server.h"
 
 
-int main()
+int main(int argc, char *argv[])
 {
-    Server s;
-    while(true)
-    {
+    	if(argc > 1)
+	{
+		std::cout << "Using passed in arguments" << std::endl;
+		// Read in the IP address from the command line
+		std::string ip_addr(argv[1]);
 
-    }
+    		// Read in the port
+    		long portval = strtol(argv[2], NULL, 10);
+    		if ((portval < 1) || (portval > 65535)) 
+		{
+    		  	std::cout << "Invalid port. Value must be between 1 and 65535";
+    		  	std::cout << "Format: " << argv[0] << " [<max_range>] [<max_threads>]\n";
+      			exit(0);
+    		}
+    		int port = (int) portval;
+		
+		// create server
+		Server s(ip_addr, port);
+	}
+	else
+	{
+		std::cout << "Using default port" << std::endl;
+    		Server s;
+	}
+	
+
 }
     /*
     std::vector<Server> nodes;

@@ -31,7 +31,7 @@ int main()
         c->shutdown();
     }*/
 
-    std::vector<int> ports = {9999, 9998};
+    std::vector<int> ports = {10000};//, 9999};
     std::string server = "127.0.0.1";
     for (const auto& p : ports) {
 	    std::cout << "Connecting on:" << server << " Port " << p << std::endl;
