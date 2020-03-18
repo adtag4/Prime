@@ -97,7 +97,9 @@ int Server::setupCSocket()
     char svc[NI_MAXSERV];
 
     std::cout << "Waiting for Connection" << std::endl;
-    clientSocket = accept4(_listening, (sockaddr*) &client, &clientSize, SOCK_NONBLOCK);
+    clientSocket = accept(_listening, (sockaddr*) &client, &clientSize);
+    std::cout<< "Listenening port: " << _listening;
+    std::cout<< "client port: " << clientSocket;
     if(clientSocket == -1)
     {
         std::cerr << "Problem with client connecting";

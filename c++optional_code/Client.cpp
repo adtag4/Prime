@@ -91,13 +91,17 @@ int Client::connected() {
     // do while loop to send and receive data
     int finished = 0;
     char buf[_msgSize];
+    int work = _work;
+    std::string s = std::to_string(work);
+    char const *pchar = s.c_str();
     std::string userInput;
     do {
-        int sendRes = send(_sock, (char *) _work, strlen((char*)_work) + 1, 0);
+        int sendRes = send(_sock, pchar, strlen((pchar)) + 1, 0);
 
         if (sendRes == -1) {
             std::cout << "Failed to send to server." << std::endl;
             shutdown();
+            return 0;
         } else {
             std::cout << "work sent to " << _svrIP;
         }
