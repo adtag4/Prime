@@ -49,10 +49,10 @@ namespace Utils {
  * Inserts a new line (\t\n) at the end.
  */
 template<typename T>
-static void AppendVectorToFile(vector<T>& v, std::string file_name)
+static void AppendVectorToFile(std::vector<T>& v, std::string file_name)
 {
-	ofstream file;
-	file.open (file_name.c_str (), ios::app);
+	std::ofstream file;
+	file.open (file_name.c_str (), std::ios::app);
 
 	for(int i=0; i<v.size (); ++i)
 	{

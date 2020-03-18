@@ -3,11 +3,6 @@
 #include "algorithm/algorithm.h"
 #include "algorithm/quadratic.h"
 
-#include "../QS/QS.C"
-#include "../QS/eratosthenes.C"
-#include "../QS/gmp-patch.c"
-#include "../QS/math-utils.C"
-
 namespace alg
 {
 

@@ -8,7 +8,7 @@
 void QSParallel::setNumThreads (unsigned nbThreads)
 {
 	if(nbThreads < 1)
-		throw logic_error ("nbThreads must be at least 1");
+		throw std::logic_error ("nbThreads must be at least 1");
 
 	this->nb_threads = nbThreads;
 }
@@ -114,7 +114,7 @@ void QSParallel::Sieve()
 				//Can never happen
 				/*if(exponent_prime_p == 0 &&
 						sieving_temp_smooth_numbers[j].IsFullyFactoredOnSmoothBase())
-					cout << " REPETITION " << endl;*/
+					std::cout << " REPETITION " << endl;*/
 
 				//Check if sieving_temp_smooth_numbers[j] was fully factored
 				if(sieving_temp_smooth_numbers[j].IsFullyFactoredOnSmoothBase())
@@ -168,7 +168,7 @@ void QSParallel::Sieve()
 				//Can never happen
 				/*if(exponent_prime_p == 0 &&
 						sieving_temp_smooth_numbers[j].IsFullyFactoredOnSmoothBase())
-					cout << " ERROR " << endl;*/
+					std::cout << " ERROR " << endl;*/
 
 				//Check if sieving_temp_smooth_numbers[j] was fully factored
 				if(sieving_temp_smooth_numbers[j].IsFullyFactoredOnSmoothBase())
@@ -198,8 +198,8 @@ void QSParallel::Sieve()
 	mpz_clear(tmp_prime_p);
 	dcout << "\r\tSieving at " << starting_x_current_round << "\t";
 	dcout << "Smooth numbers found\t " << nb_discovered_smooth_numbers
-		  << "/" << smooth_base_size << "          " << ends;
-	cout.flush();
+		  << "/" << smooth_base_size << "          " << std::ends;
+	std::cout.flush();
 	dcout << "\n";
 	dcout << "\n";
 

@@ -11,11 +11,10 @@
 #include <iostream>
 
 
-class DebugCout : public ostream {
-
-public:
-	DebugCout() : ostream(cout.rdbuf()) { }
-
+class DebugCout : public std::ostream 
+{
+	public:
+		DebugCout() : std::ostream(std::cout.rdbuf()) { }
 };
 
 template <typename T>

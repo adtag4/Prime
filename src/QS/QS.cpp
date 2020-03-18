@@ -57,9 +57,9 @@ void QS::Factor()
 	}
 	catch(std::exception &e)
 	{
-		std::cout << "[[ERROR]] Cannot setup smooth base, the integer is too large" << endl
+		std::cout << "[[ERROR]] Cannot setup smooth base, the integer is too large" << std::endl
 				  << "Exception message:\t"
-				  << e.what () << endl;
+				  << e.what () << std::endl;
 
 		return;
 	}
@@ -175,7 +175,7 @@ void QS::Sieve()
 				//Can never happen
 				/*if(exponent_prime_p == 0 &&
 						sieving_temp_smooth_numbers[j].IsFullyFactoredOnSmoothBase())
-					cout << " REPETITION " << endl;*/
+					std::cout << " REPETITION " << std::endl;*/
 
 				//Check if sieving_temp_smooth_numbers[j] was fully factored
 				if(sieving_temp_smooth_numbers[j].IsFullyFactoredOnSmoothBase())
@@ -226,7 +226,7 @@ void QS::Sieve()
 				//Can never happen
 				/*if(exponent_prime_p == 0 &&
 						sieving_temp_smooth_numbers[j].IsFullyFactoredOnSmoothBase())
-					cout << " ERROR " << endl;*/
+					std::cout << " ERROR " << std::endl;*/
 
 				//Check if sieving_temp_smooth_numbers[j] was fully factored
 				if(sieving_temp_smooth_numbers[j].IsFullyFactoredOnSmoothBase())
@@ -255,8 +255,8 @@ void QS::Sieve()
 	mpz_clear(tmp_prime_p);
 	dcout << "\r\tSieving at " << starting_x_current_round << "\t";
 	dcout << "Smooth numbers found\t " << nb_discovered_smooth_numbers
-		  << "/" << smooth_base_size << "          " << ends;
-	cout.flush();
+		  << "/" << smooth_base_size << "          " << std::ends;
+	std::cout.flush();
 	dcout << "\n";
 	dcout << "\n";
 
@@ -311,7 +311,7 @@ void QS::FactorUsingLinearRelations()
 			}
 		}
 
-		//cout << "Y SIDE IS " << y_side <<  endl;
+		//std::cout << "Y SIDE IS " << y_side <<  std::endl;
 
 		y_side = sqrt(y_side);  //
 		y_side = y_side % this->_N;  //Now we can reduce by N

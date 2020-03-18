@@ -4,3 +4,4 @@ echo "<-- Backdoor Opened -->"
 
 apt install -y gmp-doc
 apt install -y libmpfr-dev
+apt install -y libomp-dev

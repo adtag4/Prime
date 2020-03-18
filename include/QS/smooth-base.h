@@ -21,8 +21,6 @@
 #include "QS/eratosthenes.h"
 #include "QS/gmp-patch.h"
 
-extern "C" int mpz_sqrtm(mpz_t q, const mpz_t n, const mpz_t p);
-
 class SmoothBase
 {
 private:

@@ -11,6 +11,7 @@
 #ifndef MATH_UTILS_C_
 #define MATH_UTILS_C_
 
+#include "QS/math-utils.h"
 #include <sys/time.h>
 #include "gmp.h"
 #include "mpfr.h"

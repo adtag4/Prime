@@ -6,6 +6,7 @@
  *      Copyright martani 2013
  */
 
+#include "QS/eratosthenes.h"
 
 #ifndef ERATOSTHENES_C_
 #define ERATOSTHENES_C_
@@ -58,10 +59,10 @@ void Erastosthenes::SievePrimesUpTo(unsigned long int upperBase)
 	this->_sieving_performed = true;
 }
 
-void Erastosthenes::GetPrimes(vector<unsigned long int>& primesArray,
+void Erastosthenes::GetPrimes(std::vector<unsigned long int>& primesArray,
 		unsigned long int upperBase)
 {
-	vector<unsigned long int> primes;
+	std::vector<unsigned long int> primes;
 
 	//Sieving
 	if(!this->_sieving_performed)
@@ -78,7 +79,7 @@ void Erastosthenes::GetPrimes(vector<unsigned long int>& primesArray,
 
 	if(!this->_keep_primes_bitset)
 	{
-		vector<bool> tmp;
+		std::vector<bool> tmp;
 		this->_primes_bitset.clear();
 		this->_primes_bitset.swap(tmp);
 
@@ -86,10 +87,10 @@ void Erastosthenes::GetPrimes(vector<unsigned long int>& primesArray,
 	}
 }
 
-void Erastosthenes::GetPrimes_QuadraticResidue(vector<unsigned long int>& primesArray,
+void Erastosthenes::GetPrimes_QuadraticResidue(std::vector<unsigned long int>& primesArray,
 		unsigned long int upperBase, mpz_class N)
 {
-	vector<unsigned long int> primes;
+	std::vector<unsigned long int> primes;
 
 	//Get an mpz_t out of C++ mpz_class
 	mpz_t Nmpz;
@@ -119,7 +120,7 @@ void Erastosthenes::GetPrimes_QuadraticResidue(vector<unsigned long int>& primes
 
 	if(!this->_keep_primes_bitset)
 	{
-		vector<bool> tmp;
+		std::vector<bool> tmp;
 		this->_primes_bitset.clear();
 		this->_primes_bitset.swap(tmp);
 

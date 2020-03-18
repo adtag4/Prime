@@ -37,12 +37,12 @@ protected:
 	//The smooth numbers to be found during the Sieving step
 	std::vector<SmoothNumber> final_smooth_numbers;
 
-	//The exponents vectors' matrix. Filled during the Sieving step
+	//The exponents std::vectors' matrix. Filled during the Sieving step
 	Matrix _M;
 
 	//The carried back solutions of the dependent rows of the matrix _M
 	//These are the solutions to the system represented by _M in GF(2)
-	vector<mpz_class> linear_relations;
+	std::vector<mpz_class> linear_relations;
 	GaussElimination gauss;
 
 

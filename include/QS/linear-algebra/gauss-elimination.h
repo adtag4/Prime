@@ -5,6 +5,8 @@
  *      Author: sky
  */
 
+#pragma once
+
 #ifndef GAUSS_ELIMINATION_H_
 #define GAUSS_ELIMINATION_H_
 
@@ -18,7 +20,7 @@ private:
 	//Fills the vector linear_relations after Echelonize is called
 	void FillLinearRelations (Matrix& M, Matrix& ID);
 	bool is_echelonized;
-	vector<mpz_class> linear_relations;
+	std::vector<mpz_class> linear_relations;
 
 public:
 
@@ -34,7 +36,7 @@ public:
 	void Echelonize (Matrix& M);
 
 	//Returns the linear relations resulted from the echelon form of the Matrix M
-	const vector<mpz_class>& GetLinearRelations ();
+	const std::vector<mpz_class>& GetLinearRelations ();
 
 	unsigned int GetNbLinearRelations () const;
 };

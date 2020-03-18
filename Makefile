@@ -1,10 +1,11 @@
 CC=g++
 
 CPP_OPTS=-std=c++17
-LIBS=-lpthread -lgmp -lgmpxx -lmpfr
+LIBS=-lpthread -lgmp -lgmpxx -lmpfr -lomp
 INC=-Iinclude
 
 ALG_FILES=src/algorithm/algorithm.cpp src/algorithm/ecm.cpp src/algorithm/pollard.cpp src/algorithm/quadratic.cpp
+QS_FILES=src/QS/QS.cpp src/QS/QS-parallel.cpp src/QS/eratosthenes.cpp src/QS/gmp-patch.c src/QS/math-utils.C src/QS/utils.cpp src/QS/smooth-base.cpp src/QS/smooth-number.cpp src/QS/linear-algebra/matrix.cpp src/QS/linear-algebra/gauss-elimination.cpp
 
 all: node user
 
@@ -17,5 +18,5 @@ user:
 clean:  
 	rm node
 
-test: test.cpp $(ALG_FILES)
+test: test.cpp $(ALG_FILES) $(QS_FILES)
 	$(CC) -o $@ $^ $(CPP_OPTS) $(LIBS) $(INC)

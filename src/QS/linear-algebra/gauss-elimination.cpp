@@ -86,7 +86,7 @@ void GaussElimination::FillLinearRelations (Matrix& M, Matrix& ID)
 }
 
 
-const vector<mpz_class>& GaussElimination::GetLinearRelations ()
+const std::vector<mpz_class>& GaussElimination::GetLinearRelations ()
 {
 	if(!this->is_echelonized)
 		throw std::logic_error ("Must call Echelonize first");
