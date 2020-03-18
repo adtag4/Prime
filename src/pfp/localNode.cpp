@@ -77,7 +77,7 @@ void handleClient()
 		std::cout << host << " connected on " << ntohs(client.sin_port) << std::endl;
 	}
 	// create thread for working with client
-        threadPool_.emplace_back(std::thread(&localNode::handleUser, this, client, clientSocket));
+        std::thread(&localNode::handleUser, this, client, clientSocket).detach();
 
 }
 
@@ -108,5 +108,5 @@ void handleUser(int userSocket, struct sockaddr_in userAddr)
 	}
 	// close client/user socket 
 	close(userSocket);
-	// close the thread - done by exiting the function
+	// thread frees resources when it exits the function
 }
