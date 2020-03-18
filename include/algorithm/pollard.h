@@ -7,26 +7,6 @@
 namespace alg
 {
 
-class PollardState : public alg::AlgStateData
-{
-	public:
-		PollardState() {}; //delete default ctor
-		~PollardState() {};
-
-		// use this one
-		PollardState(alg::INT n); // for initial 
-		PollardState(alg::INT n, alg::INT x, alg::INT y, alg::INT d); // for ongoing
-
-		alg::INT	x_;
-		alg::INT	y_;
-		alg::INT	d_;
-		alg::INT	n_;
-
-	protected:
-		void encode(std::ostream& out) override;
-		void decode(std::istream& in)  override;
-};
-
 class Pollard : public alg::Algorithm
 {
 	public:

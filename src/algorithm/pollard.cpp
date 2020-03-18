@@ -7,41 +7,6 @@
 namespace alg
 {
 
-/***********************************************
- *        PollardState Functions               *
- ***********************************************/
-
-PollardState::PollardState(alg::INT n)
-	: n_(n),
-	  d_("1"),
-	  x_("2"),
-	  y_("2")
-{
-	// initial state of a pollard alg should be set up now
-}
-
-PollardState::PollardState(alg::INT n, alg::INT x, alg::INT y, alg::INT d)
-	: n_(n),
-	  d_(d),
-	  x_(x),
-	  y_(y)
-{
-	// values should be copied
-}
-
-
-void PollardState::encode(std::ostream& out)
-{
-	out << x_ << ' ' << y_ << ' ' << d_ << ' ' << n_;
-}
-
-
-void PollardState::decode(std::istream& in)
-{
-	in >> x_ >> y_ >> d_ >> n_;
-}
-
-
 /*****************************************
  *           Pollard functions           *
  *****************************************/
