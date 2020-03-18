@@ -1,7 +1,7 @@
 CC=g++
 
 CPP_OPTS=-std=c++17
-LIBS=-lpthread -lgmp -lgmpxx
+LIBS=-lpthread -lgmp -lgmpxx -lmpfr
 INC=-Iinclude
 
 all: node user
@@ -14,3 +14,6 @@ user:
 
 clean:  
 	rm node
+
+test: test.cpp
+	$(CC) -o $@ $^ $(CPP_OPTS) $(LIBS) $(INC)
