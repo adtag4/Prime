@@ -45,7 +45,7 @@ int localNode::setupListener()
 	close(listenSocket_);
 }
 
-void handleClient()
+void localNode::handleClient()
 {
 	// Accept a call
 	struct sockaddr_in client; 
@@ -81,31 +81,49 @@ void handleClient()
 
 }
 
-void handleUser(int userSocket, struct sockaddr_in userAddr)
+bool localNode::searchForMatch(pfp::WorkOrder& wo, pfp::WorkResponse& wr)
+{
+	// searches queue/vector of answers for one matching wo given.  
+		// if not found - false
+		// if found: copy to wr and ret true
+}
+
+void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 {
 	// while receiving - display message, echo message
 	char buf[4096];
-	while(true)
+	
+	// clear the buffer
+	memset(buf, 0, 4096);
+	// wait for message
+	int bytesRecv = recv(userSocket, buf, 4096, 0);
+	if(bytesRecv == -1)
 	{
-		// clear the buffer
-		memset(buf, 0, 4096);
-		// wait for message
-		int bytesRecv = recv(userSocket, buf, 4096, 0);
-		if(bytesRecv == -1)
-		{
-			std::cerr << "There was a connection issue" << std::endl;
-			break;
-		}
-		if(bytesRecv == 0)
-		{
-			std::cout << "The client sent a disconnected message" << std::endl;
-			break;
-		}
-		std::cout << "Received: " << std::string(buf, 0, bytesRecv) << std::endl;
-
-		// echo the message back to the client
-		send(userSocket, buf, bytesRecv + 1, 0);
+		std::cerr << "There was a connection issue" << std::endl;
+		break;
 	}
+	if(bytesRecv == 0)
+	{
+		std::cout << "The client sent a disconnected message" << std::endl;
+		break;
+	}
+	std::cout << "Received: " << std::string(buf, 0, bytesRecv) << std::endl;
+	
+	// Use recvd to put a WorkOrder in the queue
+	pfp::WorkOrder wo;
+	std::stringstream ss;
+	ss.str(buf);
+	ss >> wo; // decode WorkOrder from input
+	jobs_.push(wo); // add to queue
+	
+	pfp::WorkResponse answer;
+	while(!searchForMatch(wo, answer));
+	
+	// encode and send answer
+	std::stringstream ss;
+	ss << answer;
+	send(usersocket, ss.c_str(), ss.length(), 0);
+
 	// close client/user socket 
 	close(userSocket);
 	// thread frees resources when it exits the function
