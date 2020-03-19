@@ -124,7 +124,7 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	// send work order over connection
 	std::stringstream ss; 
 	ss << myJob;
-	std::cout << "JOB SENT IS:" << ss.str().c_str << std::endl;
+	std::cout << "JOB SENT IS:" << ss.str().c_str() << std::endl;
 	send(socketFD, ss.str().c_str(), sizeof(ss.str().c_str() + 1), 0);
 	
 	// wait for answer
@@ -148,7 +148,7 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	std::cout << "RECEIVED INFORMATION IN STRING:" << s << std::endl;
 	std::stringstream ss2;
 	ss2.str(s);
-	std::cout << "SS2 IS:" << ss2 << std::endl;
+	std::cout << "SS2 IS:" << ss2.str().c_str() << std::endl;
 	ss2 >> result;
 	std::cout << "RESULT IS:" << result << std::endl;
 
