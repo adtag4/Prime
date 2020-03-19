@@ -5,7 +5,7 @@ namespace pfp
 
 // Server constructor with port to run on
 localUser::localUser(std::string filename) : 
-		stillWorking_(true);
+		stillWorking_(true)
 {
 	// read in entries in file and store them in freeNodes_	
 	// create the file if it does not exist 
