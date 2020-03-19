@@ -1,5 +1,6 @@
 #include "pfp/localUser.h"
-
+#include <fstream>
+#include <time.h>
 namespace pfp
 {
 
@@ -31,7 +32,7 @@ localUser::localUser(std::string filename) :
 }
 
 // the method that the main code will run
-void main()
+void localUser::main()
 {
 	std::string userNum; 
 	// get the number from the user 
@@ -48,31 +49,58 @@ void main()
 	coordThread.join();
 	manThread.join();
 
-
+	printSolution();
 }
 
 // sets up socket connection
-int connectToNode(pfp::remoteNode node)
+int localUser::connectToNode(pfp::remoteNode node)
 {
-	node.makeConnectionTo();
+	return node.makeConnectionTo();
 }
 
-// creates work orders, removes aswers
-void workManager()
+// creates work orders, removes answers
+void localUser::workManager()
 {
+	// Initial work order creation
+	for(auto x = 0; x < numRandomOrders_; x++)
+	{
+		pfp::WorkOrder pollardJob = genRandomPollardOrder(n_);
+		pfp::WorkOrder ecmJob     = genRandomECMOrder(n_);
+		jobs_.push(pollardJob);
+		jobs_.push(ecmJob);
+	}
+	pfp::WorkOrder qsJob = genQSOrder(alg::INT n, numRelsQS_);
+	jobs_.push(qsJob);
+
 	while(stillWorking_)
 	{
-		// create work orders if needed 
+		// get first answer in queue
+		while(answers_.empty());
+		pfp::WorkResponse wr = answers_.front();
+		answers_.pop();
 
-		// remove answers 
+		alg::INT factor;
+		// test completeness
+		if(factorFound(wr, factor)) // found a factor!  Shutdown and complete
+		{
+			stillRunning_ = false;
+			shutdown(factor);
+		}
+		// determine course of action
+		if(factorFail(wr))
+		{
+			// Nothing to do, let RAII clean up
+			continue;
+		}
 
-		// if answer found, send shutdown signal 
-
+		// if not fail, but not complete, continue the process
+		pfp::WorkOrder newOrder = continueOrder(wr);
+		jobs_.push(newOrder); // add to queue
 	}
 }
 
 // sends work order, waits for reply, adds ans and free node
-void handleConnection(int socketFD)
+void localUser::handleConnection(int socketFD)
 {
 	// send work  order over connection
 
@@ -85,7 +113,7 @@ void handleConnection(int socketFD)
 }
 
 // removes work orders and sends to free nodes
-void workCoordinator()
+void localUser::workCoordinator()
 {
 	while(stillWorking_)
 	{
@@ -99,6 +127,109 @@ void workCoordinator()
 	}
 
 }
+
+/*************************************************
+ *         HELPER FUNCTIONS BELOW HERE           *
+ *************************************************/
+alg::INT localUser::genRandom(alg::INT n)
+{
+	gmp_randclass rc(gmp_randinit_default);
+	rc.seed(time(NULL));
+	auto x = rc.get_z_range(n - 1_mpz);
+	x = x + 1_mpz;
+	return x;
+}
+
+pfp::WorkOrder localUser::genRandomPollardOrder(alg::INT n)
+{
+	alg::INT x = genRandom(n);
+	alg::INT y = genRandom(n);
+	alg::INT d = 1_mpz;
+	alg::PollardState ps(x, y, d, n);
+	std::stringstream ss;
+	ss << ps;
+	pfp::WorkOrder wo(pfp::ALG::PR, ss.str());
+	return wo;
+}
+
+pfp::WorkOrder localUser::genRandomECMOrder(alg::INT n)
+{
+	alg::INT x1 = genRandom(n);
+	alg::INT y1 = genRandom(n);
+	alg::INT b  = genRandom(n);
+	alg::PrePoint pp(x1, y1);
+	alg::EllipticCurve ec(pp, b, n);
+	alg::Point p(x1, y1);
+	alg::ECMState es(p, p, ec);
+	std::stringstream ss;
+	ss << es;
+	pfp::WorkOrder wo(pfp::ALG::ECM, ss.str());
+	return wo;
+}
+
+pfp::WorkOrder localUser::genQSOrder(alg::INT n, int numRels)
+{
+	alg::QuadSieveState qss(n, numRels);
+	std::stringstream ss;
+	ss << qss;
+	pfp::WorkOrder wo(pfp::ALG::QS, ss.str());
+	return wo;
+}
+
+pfp::WorkOrder localUser::continueOrder(pfp::WorkResponse wr)
+{
+	if(wr.getAlgorithm() == pfp::ALG::QS)
+	{
+		// just need to increase number of linear relations!
+		std::string s = wr.getEncodedEnd();
+		std::stringstream ss;
+		ss.str(s);
+		alg::QuadSieveState qss;
+		ss >> qss;
+		qss.nbLinRels_ = qss.nbLinRels_ + 10;
+		std::stringstream ss2;
+		ss2 << qss;
+		pfp::WorkOrder wo(pfp::ALG::QS, ss2.str());
+		return wo;
+	}
+	else
+	{
+		return pfp::WorkOrder(wr.getAlgorithm(), wr.getEncodedEnd()); // the end is the beginning
+	}
+}
+
+bool localUser::factorFound(pfp::WorkResponse wr, alg::INT& factor)
+{
+	switch(wr.getAlgorithm)
+	{
+		case pfp::ALG::PR:
+			return factorFoundPollard(wr.getEncodedEnd(), factor);
+		case pfp::ALG::ECM:
+			return factorFoundECM(wr.getEncodedEnd(), factor);
+		case pfp::ALG::QS:
+			return factorFoundQS(wr.getEncodedEnd(), factor);
+		default:
+			return false;
+	}
+}
+
+bool localUser::factorFoundPollard(std:string data, alg::INT& factor)
+{
+
+}
+
+bool localUser::factorFoundECM(std:string data, alg::INT& factor)
+{
+
+}
+
+bool localUser::factorFoundQS(std:string data, alg::INT& factor)
+{
+
+}
+
+
+
 
 
 
