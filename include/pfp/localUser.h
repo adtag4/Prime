@@ -14,6 +14,7 @@
 
 #include "algorithm/algorithm.h"
 #include "pfp/pfp.h"
+#include "pfp/remoteNode.h"
 
 namespace pfp
 {
@@ -42,7 +43,7 @@ class localUser
 		std::vector<alg::INT>		factors_;
 		bool				stillWorking_;
 		std::queue<pfp::remoteNode>	freeNodes_; // holds the list of nodes read in from file 
-}
+};
 
 
 
