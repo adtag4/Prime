@@ -41,13 +41,13 @@ void localNode::corona()
 
 void localNode::work()
 {
-	std::cout << "Work thread started" << std::endl;
+	//std::cout << "Work thread started" << std::endl;
 	while(!shutdown_)
 	{
 		
 		while(jobs_.empty()); // wait until there are jobs to do
 
-		std::cout << "localNode::work found a job to do" << std::endl;		
+		//std::cout << "localNode::work found a job to do" << std::endl;		
 		
 		std::unique_lock<std::mutex> l(jobs_mutex_);
 		pfp::WorkOrder currentJob = jobs_.front();
@@ -66,7 +66,7 @@ void localNode::work()
 				std::cout << "localNode::work Job is pollard" << std::endl;
 				alg::PollardState ps;
 				ss >> ps;
-				std::cout << "localNode::work running " << ps << std::endl;
+				//std::cout << "localNode::work running " << ps << std::endl;
 				alg::Pollard p(ps);
 				alg::runXTimes(as, cycles_, p);
 				break;
@@ -76,7 +76,7 @@ void localNode::work()
 				std::cout << "localNode::work Job is ECM" << std::endl;
 				alg::ECMState es;
 				ss >> es;
-				std::cout << "localNode::work running " << es << std::endl;
+				//std::cout << "localNode::work running " << es << std::endl;
 				if(!es.isValid())
 				{
 					as << "0 0 0 0 0 0 0 -1";
@@ -88,10 +88,10 @@ void localNode::work()
 			}
 			case pfp::ALG::QS:
 			{
-				std::cout << "locclNode::work Job is QS" << std::endl;
+				std::cout << "localNode::work Job is QS" << std::endl;
 				alg::QuadSieveState qss;
 				ss >> qss;
-				std::cout << "localNode::work running " << qss << std::endl;
+				//std::cout << "localNode::work running " << qss << std::endl;
 				alg::QuadSieve qs(qss);
 				alg::runXTimes(as, 1, qs); // different because only runs once.  
 				break;
@@ -99,13 +99,13 @@ void localNode::work()
 			default:
 				std::cerr << "Wierd input lol" << std::endl; // none algorithm - just ignore
 		}
-		std::cout << "localNode::work finished job" << std::endl;
+		//std::cout << "localNode::work finished job" << std::endl;
 		pfp::WorkResponse wr(currentJob.getAlgorithm(), currentJob.getEncodedState(), as.str());
 		std::cout << "localNode::work response is: " << wr << std::endl;
 		
 		
 		std::unique_lock<std::mutex> lock(answer_mutex_);
-		std::cout << "localNode::work pushed response into vector" << std::endl;
+		//std::cout << "localNode::work pushed response into vector" << std::endl;
 		answers_.push_back(wr); // add to list of finished work
 
 		// and RAII cleans up!
@@ -192,8 +192,8 @@ bool localNode::searchForMatch(pfp::WorkOrder& wo, pfp::WorkResponse& wr)
 	std::unique_lock<std::mutex> lock(answer_mutex_);
 	for(auto x = answers_.begin(); x != answers_.end(); x++)
 	{
-		std::cout << "locaNode::searchForMatch comparing: (" << x->getEncodedStart() << ") and (" << wo.getEncodedState() << ")" << std::endl;
-		std::cout << "ALTERNATE: (" << x->getEncodedStart().c_str() << ") and (" << wo.getEncodedState().c_str() << ")" << std::endl;
+		//std::cout << "locaNode::searchForMatch comparing: (" << x->getEncodedStart() << ") and (" << wo.getEncodedState() << ")" << std::endl;
+		//std::cout << "ALTERNATE: (" << x->getEncodedStart().c_str() << ") and (" << wo.getEncodedState().c_str() << ")" << std::endl;
 		if(!strcmp(x->getEncodedStart().c_str(), wo.getEncodedState().c_str()))
 		{
 			wr = *x; // copy out
@@ -230,7 +230,7 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 	pfp::WorkOrder wo;
 	std::stringstream s;
 	s.str(buf);
-	printf("localNode::handleUser stringstream: %s\n", s.str().c_str());
+	//printf("localNode::handleUser stringstream: %s\n", s.str().c_str());
 	s >> wo; // decode WorkOrder from input
 	std::cout << "localNode::handleUser Work Order: " << wo << std::endl;
 	std::unique_lock<std::mutex> l(jobs_mutex_);
@@ -241,7 +241,7 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 	while(!searchForMatch(wo, answer))
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(2));
-		std::cout << "localNode::handleUser No answer yet [0 / " << answers_.size() << "]" << std::endl;
+		//std::cout << "localNode::handleUser No answer yet [0 / " << answers_.size() << "]" << std::endl;
 	}
 	std::cout << "localNode::handleUser found answer: " << answer << std::endl;
 	
