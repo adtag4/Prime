@@ -39,6 +39,7 @@ localUser::localUser(std::string filename) :
    	}
 
 	rc_.seed(time(NULL));		
+	numRelsQS_ = 15;
 }
 
 // the method that the main code will run
