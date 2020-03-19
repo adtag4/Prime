@@ -75,6 +75,16 @@ int localUser::connectToNode(pfp::remoteNode node)
 // creates work orders, removes answers
 void localUser::workManager()
 {
+	// generate a default Pollard Rho to start 
+	alg::INT x = 2_mpz;
+	alg::INT y = x;
+	alg::INT d = 1_mpz;
+	alg::PollardState ps(x, y, d, n_);
+	std::stringstream ss;
+	ss << ps;
+	pfp::WorkOrder firstwo(pfp::ALG::PR, ss.str());
+	jobs_.push(firstwo);
+	
 	// Initial work order creation
 	for(auto x = 0; x < numRandomOrders_; x++)
 	{
@@ -199,7 +209,7 @@ alg::INT localUser::genRandom(alg::INT n)
 pfp::WorkOrder localUser::genRandomPollardOrder(alg::INT n)
 {
 	alg::INT x = genRandom(n);
-	alg::INT y = genRandom(n);
+	alg::INT y = x;
 	alg::INT d = 1_mpz;
 	alg::PollardState ps(x, y, d, n);
 	std::stringstream ss;
