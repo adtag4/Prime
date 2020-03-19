@@ -52,7 +52,7 @@ void localUser::main()
 	std::getline(std::cin, userNum); 
 	// initialize n_ and set it
 	n_.set_str(userNum, 10);
-	std::cout << "Your number is: " << n_ << std::endl;
+	//std::cout << "Your number is: " << n_ << std::endl;
 	// create Coordinator and Manager threads 
 	std::thread coordThread(&localUser::workCoordinator, this); 
 	std::thread manThread(&localUser::workManager, this); 
@@ -120,6 +120,7 @@ void localUser::workManager()
 		// if not fail, but not complete, continue the process
 		pfp::WorkOrder newOrder = continueOrder(wr);
 		jobs_.push(newOrder); // add to queue
+		std::cout << "***CONTINUATION ORDER***:" << newOrder << std::endl;
 	}
 }
 
@@ -132,14 +133,14 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	// get available jobs
 	pfp::WorkOrder myJob = jobs_.front();
 	jobs_.pop();
-	std::cout << "Remaining jobs in queue:" << jobs_.size() << std::endl; 
+	//std::cout << "Remaining jobs in queue:" << jobs_.size() << std::endl; 
 	
 	// send work order over connection
 	std::stringstream ss; 
 	ss << myJob;
 	std::cout << "JOB SENT IS:" << ss.str().c_str() << " with a size of:" << strlen(ss.str().c_str()) + 1 << std::endl;
 	int bytesSent = send(socketFD, ss.str().c_str(), strlen(ss.str().c_str()) + 1, 0);
-	std::cout << "USER SENT __" << bytesSent << "__ BYTES" << std::endl;
+	// std::cout << "USER SENT __" << bytesSent << "__ BYTES" << std::endl;
 	
 	// wait for answer
 	char buf[4096];
@@ -156,13 +157,13 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 		std::cout << "The node sent a disconnected message" << std::endl;
 	}
 	// put information received in work response
-	std::cout << "RECEIVED " << bytesRecv << " BYTES" << std::endl;
+	//std::cout << "RECEIVED " << bytesRecv << " BYTES" << std::endl;
 	pfp::WorkResponse result;
 	std::string s(buf);
-	std::cout << "RECEIVED INFORMATION IN STRING:" << s << std::endl;
+	//std::cout << "RECEIVED INFORMATION IN STRING:" << s << std::endl;
 	std::stringstream ss2;
 	ss2.str(s);
-	std::cout << "SS2 IS:" << ss2.str().c_str() << std::endl;
+	//std::cout << "SS2 IS:" << ss2.str().c_str() << std::endl;
 	ss2 >> result;
 	std::cout << "RESULT IS:" << result << std::endl;
 
@@ -186,7 +187,7 @@ void localUser::workCoordinator()
 			pfp::remoteNode fNode = freeNodes_.front();
 			int newConn = connectToNode(fNode);
 			freeNodes_.pop(); // remove the first element 
-			std::cout << "REMAINING FREE NODES FOR WORK:" << freeNodes_.size() << std::endl;
+			//std::cout << "REMAINING FREE NODES FOR WORK:" << freeNodes_.size() << std::endl;
 			
 			std::thread(&localUser::handleConnection, this, newConn, fNode).detach();
 		}
