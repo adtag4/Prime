@@ -8,13 +8,13 @@ std::ostream& operator << (std::ostream& out, pfp::ALG algorithm)
 {
 	switch(algorithm)
 	{
-		case PR:
+		case pfp::ALG::PR:
 			out << "P";
 			break;
-		case ECM:
+		case pfp::ALG::ECM:
 			out << "E";
 			break;
-		case QS:
+		case pfp::ALG::QS:
 			out << "Q";
 			break;
 		default:
@@ -81,13 +81,13 @@ void WorkOrder::decode(std::istream& in)
 	switch(alg.c_str()[0])
 	{
 		case 'P':
-			algorithm_ = PR;
+			algorithm_ = pfp::ALG::PR;
 			break;
 		case 'E':
-			algorithm_ = ECM;
+			algorithm_ = pfp::ALG::ECM;
 			break;
 		case 'Q':
-			algorithm_ = QS;
+			algorithm_ = pfp::ALG::QS;
 			break;
 		default:
 			std::cerr << "Broken message, can't do anything" << std::endl;
@@ -158,13 +158,13 @@ void WorkResponse::decode(std::istream& in)
 	switch(alg.c_str()[0])
 	{
 		case 'P':
-			algorithm_ = PR;
+			algorithm_ = pfp::ALG::PR;
 			break;
 		case 'E':
-			algorithm_ = ECM;
+			algorithm_ = pfp::ALG::ECM;
 			break;
 		case 'Q':
-			algorithm_ = QS;
+			algorithm_ = pfp::ALG::QS;
 			break;
 		default:
 			std::cerr << "Broken message, can't do anything" << std::endl;
