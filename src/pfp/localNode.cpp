@@ -112,7 +112,7 @@ void localNode::work()
 	}
 }
 
-int localNode::setupListener()
+void localNode::setupListener()
 {
 	// Create a socket
 	listenSocket_ = socket(AF_INET, SOCK_STREAM, 0);
