@@ -20,21 +20,21 @@ ECM::ECM(ECMState& startState)
 void ECM::proceed()
 {
 	//DEBUG
-	std::cout << "Start of proceed(): " << currentState() << std::endl;
+//	std::cout << "Start of proceed(): " << currentState() << std::endl;
 
 	if(current_.factor_ == alg::INT("0"))
 	{
 		try
 		{
 			//DEBUG
-			std::cout << "base: " << current_.p_ << std::endl;
-			std::cout << "oldP: " << current_.newP_ << std::endl;
+//			std::cout << "base: " << current_.p_ << std::endl;
+//			std::cout << "oldP: " << current_.newP_ << std::endl;
 			
 			current_.newP_ = current_.newP_ + current_.p_;
 			
 			//DEBUG
-			std::cout << "base: " << current_.p_ << std::endl;
-			std::cout << "newP: " << current_.newP_ << std::endl << std::endl;
+//			std::cout << "base: " << current_.p_ << std::endl;
+//			std::cout << "newP: " << current_.newP_ << std::endl << std::endl;
 		}
 		catch (alg::INT factor)
 		{
@@ -48,11 +48,11 @@ void ECM::proceed()
 			return;
 		}
 		//DEBUG
-		std::cout << "No error/factor caught" << std::endl;
+//		std::cout << "No error/factor caught" << std::endl;
 	}
 
 	//DEBUG
-	std::cout << "End of proceed(): " << currentState() << std::endl;
+//	std::cout << "End of proceed(): " << currentState() << std::endl;
 }
 
 bool ECM::foundFactor()

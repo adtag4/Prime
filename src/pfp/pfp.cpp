@@ -46,16 +46,6 @@ std::string WorkOrder::getEncodedState()
 	return encodedState_;
 }
 
-pfp::remoteUser WorkOrder::getSource()
-{
-	return source_;
-}
-
-// setter functions
-void WorkOrder::setSource(pfp::remoteUser source)
-{
-	source_ = source;
-}
 
 // encoding/decoding
 

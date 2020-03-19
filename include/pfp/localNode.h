@@ -57,7 +57,7 @@ class localNode
 		int				cycles_;
 		std::vector<pfp::WorkResponse>	answers_;
 		std::mutex			answer_mutex_;
-}
+};
 
 
 
