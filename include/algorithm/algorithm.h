@@ -65,6 +65,10 @@ void runXTimes(std::ostream& out, int x, A& a)
 		{
 			break;
 		}
+		if((i % 100) == 0)
+		{
+			std::cout << "alg::runXTimes has run " << i << " times" << std::endl;
+		}
 	}
 	out << a.currentState() << std::endl;
 }

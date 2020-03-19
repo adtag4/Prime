@@ -22,7 +22,7 @@ namespace pfp
 class localUser
 {
 	public:
-		localUser() {};
+		localUser() : rc_(gmp_randinit_default) {};
 		~localUser() {};
 
 		localUser(std::string filename); // allows connecting to network where nodes are in file
@@ -45,6 +45,7 @@ class localUser
 		int				numRandomOrders_; // number of random Pollard and ECM orders to start
 		int				numRelsQS_;	// number of linear relations to start with for QS
 		std::vector<alg::INT>		factors_; // list of found factors to modulus
+		gmp_randclass			rc_;
 
 		// helper functions
 		alg::INT	genRandom(alg::INT n); // random between 1...n-1
