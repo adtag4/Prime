@@ -19,9 +19,7 @@ class WorkOrder
 
 		pfp::ALG	getAlgorithm();
 		std::string	getEncodedState();
-		pfp::remoteUser	getSource();
 
-		void		setSource(pfp::remoteUser source);
 		void 		encode(std::ostream& out);
 		void		decode(std::istream& in);
 		
@@ -31,7 +29,6 @@ class WorkOrder
 	private:
 		pfp::ALG	algorithm_;
 		std::string	encodedState_;
-		pfp::remoteUser	source_;
 };
 
 class WorkResponse
