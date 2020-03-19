@@ -1,6 +1,8 @@
 #include "pfp/localUser.h"
 #include <fstream>
 #include <time.h>
+#include <sstream>
+
 namespace pfp
 {
 
@@ -39,7 +41,7 @@ void localUser::main()
 	std::cout << "Please enter your number to be factored. " << std::endl << ">"; 
 	std::getline(std::cin, userNum); 
 	// initialize n_ and set it
-	n.set_str(userNum, 10);
+	n_.set_str(userNum, 10);
 	// create Coordinator and Manager threads 
 	std::thread coordThread(&localUser::workCoordinator, this); 
 	std::thread manThread(&localUser::workManager, this); 
@@ -69,7 +71,7 @@ void localUser::workManager()
 		jobs_.push(pollardJob);
 		jobs_.push(ecmJob);
 	}
-	pfp::WorkOrder qsJob = genQSOrder(alg::INT n, numRelsQS_);
+	pfp::WorkOrder qsJob = genQSOrder(alg::INT (n_), numRelsQS_);
 	jobs_.push(qsJob);
 
 	while(stillWorking_)
@@ -83,7 +85,7 @@ void localUser::workManager()
 		// test completeness
 		if(factorFound(wr, factor)) // found a factor!  Shutdown and complete
 		{
-			stillRunning_ = false;
+			stillWorking_ = false;
 			shutdown(factor);
 		}
 		// determine course of action
@@ -106,8 +108,8 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	while(jobs_.empty());  
 
 	// get available jobs
-	pfp::WorkOrder myJob = jobs.front();
-	jobs.pop(); 
+	pfp::WorkOrder myJob = jobs_.front();
+	jobs_.pop();
 	
 	// send work order over connection
 	std::stringstream ss; 
@@ -152,7 +154,7 @@ void localUser::workCoordinator()
 		if(!freeNodes_.empty())
 		{
 			// there is a free node, assign it and start a thread to deal with it
-			pfp::remoteNode fNode = freeNodes_.front()
+			pfp::remoteNode fNode = freeNodes_.front();
 			int newConn = connectToNode(fNode);
 			freeNodes_.pop(); // remove the first element 
 			
@@ -207,7 +209,7 @@ pfp::WorkOrder localUser::genQSOrder(alg::INT n, int numRels)
 {
 	alg::QuadSieveState qss(n, numRels);
 	std::stringstream ss;
-	ss << qss;
+	ss << qss ;
 	pfp::WorkOrder wo(pfp::ALG::QS, ss.str());
 	return wo;
 }
@@ -236,7 +238,7 @@ pfp::WorkOrder localUser::continueOrder(pfp::WorkResponse wr)
 
 bool localUser::factorFound(pfp::WorkResponse wr, alg::INT& factor)
 {
-	switch(wr.getAlgorithm)
+	switch(wr.getAlgorithm())
 	{
 		case pfp::ALG::PR:
 			return factorFoundPollard(wr.getEncodedEnd(), factor);
@@ -249,7 +251,7 @@ bool localUser::factorFound(pfp::WorkResponse wr, alg::INT& factor)
 	}
 }
 
-bool localUser::factorFoundPollard(std:string data, alg::INT& factor)
+bool localUser::factorFoundPollard(std::string data, alg::INT& factor)
 {
 	alg::PollardState ps;
 	std::stringstream ss;
@@ -263,7 +265,7 @@ bool localUser::factorFoundPollard(std:string data, alg::INT& factor)
 	return false;
 }
 
-bool localUser::factorFoundECM(std:string data, alg::INT& factor)
+bool localUser::factorFoundECM(std::string data, alg::INT& factor)
 {
 	alg::ECMState es;
 	std::stringstream ss;
@@ -277,7 +279,7 @@ bool localUser::factorFoundECM(std:string data, alg::INT& factor)
 	return false;
 }
 
-bool localUser::factorFoundQS(std:string data, alg::INT& factor)
+bool localUser::factorFoundQS(std::string data, alg::INT& factor)
 {
 	alg::QuadSieveState qss;
 	std::stringstream ss;
@@ -291,9 +293,9 @@ bool localUser::factorFoundQS(std:string data, alg::INT& factor)
 	return false;
 }
 
-bool localUser::FactorFail(pfp::WorkResponse wr)
+bool localUser::factorFail(pfp::WorkResponse wr)
 {
-	switch(wr.getAlgorithm)
+	switch(wr.getAlgorithm())
 	{
 		case pfp::ALG::PR:
 			return factorFailPollard(wr.getEncodedEnd());
@@ -306,7 +308,7 @@ bool localUser::FactorFail(pfp::WorkResponse wr)
 	}
 }
 
-bool localUser::FactorFailPollard(std::string data)
+bool localUser::factorFailPollard(std::string data)
 {
 	alg::PollardState ps;
 	std::stringstream ss;
@@ -319,7 +321,7 @@ bool localUser::FactorFailPollard(std::string data)
 	return false;
 }
 
-bool localUser::FactorFailECM(std::string data)
+bool localUser::factorFailECM(std::string data)
 {
 	alg::ECMState es;
 	std::stringstream ss;
@@ -332,7 +334,7 @@ bool localUser::FactorFailECM(std::string data)
 	return false;
 }
 
-bool localUser::FactorFailQS(std::string data)
+bool localUser::factorFailQS(std::string data)
 {
 	return false; // just need more 
 }
