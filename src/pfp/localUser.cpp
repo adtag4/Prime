@@ -52,15 +52,15 @@ void localUser::main()
 	std::getline(std::cin, userNum); 
 	// initialize n_ and set it
 	n_.set_str(userNum, 10);
-	//std::cout << "Your number is: " << n_ << std::endl;
+	std::cout << "Your number is: " << n_ << std::endl;
 	// create Coordinator and Manager threads 
-	std::thread coordThread(&localUser::workCoordinator, this); 
 	std::thread manThread(&localUser::workManager, this); 
+	std::thread coordThread(&localUser::workCoordinator, this); 
+
 	
 
-
-	coordThread.join();
 	manThread.join();
+	coordThread.join();
 
 	printSolution();
 }
@@ -75,6 +75,7 @@ int localUser::connectToNode(pfp::remoteNode node)
 // creates work orders, removes answers
 void localUser::workManager()
 {
+	std::unique_lock<std::mutex> l(jobs_mutex_);
 	// generate a default Pollard Rho to start 
 	alg::INT x = 2_mpz;
 	alg::INT y = x;
@@ -95,13 +96,16 @@ void localUser::workManager()
 	}
 	pfp::WorkOrder qsJob = genQSOrder(n_, numRelsQS_);
 	jobs_.push(qsJob);
+	l.~unique_lock();
 
 	while(stillWorking_)
 	{
 		// get first answer in queue
 		while(answers_.empty());
+		std::unique_lock<std::mutex> a(answers_mutex_);
 		pfp::WorkResponse wr = answers_.front();
 		answers_.pop();
+		a.~unique_lock();
 
 		alg::INT factor;
 		// test completeness
@@ -119,8 +123,10 @@ void localUser::workManager()
 
 		// if not fail, but not complete, continue the process
 		pfp::WorkOrder newOrder = continueOrder(wr);
+		std::unique_lock<std::mutex> j(jobs_mutex_);
 		jobs_.push(newOrder); // add to queue
 		std::cout << "***CONTINUATION ORDER***:" << newOrder << std::endl;
+		j.~unique_lock();
 	}
 }
 
@@ -131,8 +137,10 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	while(jobs_.empty());  
 
 	// get available jobs
+	std::unique_lock<std::mutex> l(jobs_mutex_);
 	pfp::WorkOrder myJob = jobs_.front();
 	jobs_.pop();
+	l.~unique_lock();
 	//std::cout << "Remaining jobs in queue:" << jobs_.size() << std::endl; 
 	
 	// send work order over connection
@@ -168,25 +176,33 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	std::cout << "RESULT IS:" << result << std::endl;
 
 	// add answer to answers_
+	std::unique_lock<std::mutex> a(answers_mutex_);
 	answers_.push(result);
+	a.~unique_lock();
 
 	// put node back in freeNodes_
+	std::unique_lock<std::mutex> f(freeNodes_mutex_);
 	freeNodes_.push(node);
+	f.~unique_lock();
 	
 }
 
 // removes work orders and sends to free nodes
 void localUser::workCoordinator()
 {
+	// give manager time to start 
+	std::this_thread::sleep_for(std::chrono::milliseconds(20));
 	while(stillWorking_)
 	{
 		// check for any free nodes
 		if(!freeNodes_.empty())
 		{
 			// there is a free node, assign it and start a thread to deal with it
+			std::unique_lock<std::mutex> l(freeNodes_mutex_);
 			pfp::remoteNode fNode = freeNodes_.front();
 			int newConn = connectToNode(fNode);
 			freeNodes_.pop(); // remove the first element 
+			l.~unique_lock();
 			//std::cout << "REMAINING FREE NODES FOR WORK:" << freeNodes_.size() << std::endl;
 			
 			std::thread(&localUser::handleConnection, this, newConn, fNode).detach();
@@ -261,7 +277,11 @@ pfp::WorkOrder localUser::continueOrder(pfp::WorkResponse wr)
 	}
 	else
 	{
-		return pfp::WorkOrder(wr.getAlgorithm(), wr.getEncodedEnd()); // the end is the beginning
+		pfp::WorkOrder res(wr.getAlgorithm(), wr.getEncodedEnd()); 
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		return res;
+		
+		//return pfp::WorkOrder(wr.getAlgorithm(), wr.getEncodedEnd()); // the end is the beginning
 	}
 }
 
