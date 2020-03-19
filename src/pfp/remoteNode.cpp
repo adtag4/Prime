@@ -34,7 +34,7 @@ int remoteNode::makeConnectionTo()
 
 
 	// error check
-	if(IP_ == "" || port_ = 0)
+	if(IP_ == "" || port_ == 0)
 	{
 		std::cerr << "ERROR: attempted to connect to remoteNode without an IP or port" << std::endl;
 		exit(0);
@@ -53,11 +53,11 @@ int remoteNode::makeConnectionTo()
 	// setup sockaddr for destination
 	serv_addr.sin_family		= AF_INET;
 	serv_addr.sin_addr.s_addr	= addr_in->sin_addr.s_addr;
-	serv_addr.sin_port		= htons(port);
+	serv_addr.sin_port		= htons(port_);
 
 
 	int sockFD = socket(AF_INET, SOCK_STREAM, 0); // Make TCP/IPV4 socket
-	if(sock == -1)
+	if(sockFD == -1)
 	{
 		std::cerr << "You suck" << std::endl;
 		exit(-1);
@@ -75,7 +75,7 @@ int remoteNode::makeConnectionTo()
 	
 }
 
-void remoteNode::decod(std::istream& in)
+void remoteNode::decode(std::istream& in)
 {
 	in >> IP_;
 	in >> port_;
