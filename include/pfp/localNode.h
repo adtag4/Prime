@@ -44,6 +44,8 @@ class localNode
 		// thread to perform work
 		void work();
 
+		bool searchForMatch(pfp::WorkOrder& wo, pfp::WorkResponse& wr);
+
 	private:
 		int				listenPort_; // the port this node listens on
 		int				listenSocket_; // the fd for the listening tcp socket
