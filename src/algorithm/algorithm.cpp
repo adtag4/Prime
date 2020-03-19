@@ -266,7 +266,9 @@ ECMState::ECMState(Point p, Point p2, EllipticCurve curve)
 bool ECMState::isValid()
 {
 	alg::INT left = p_.y_ * p_.y_;
+	left = left % curve_.n_;
 	alg::INT right = p_.x_ * p_.x_ * p_.x_ + curve_.b_ * p_.x_ + curve_.c_;
+	right = right % curve_.n_;
 	if(left != right)
 	{
 		return false;
