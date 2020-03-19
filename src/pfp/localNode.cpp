@@ -249,7 +249,7 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 	// encode and send answer
 	std::stringstream ss;
 	ss << answer;
-	send(userSocket, ss.str().c_str(), sizeof(ss), 0);
+	send(userSocket, ss.str().c_str(), strlen(ss.str().c_str()), 0);
 
 	// close client/user socket 
 	close(userSocket);
