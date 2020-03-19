@@ -112,7 +112,7 @@ void localNode::work()
 	}
 }
 
-void localNode::setupListener()
+int localNode::setupListener()
 {
 	// Create a socket
 	listenSocket_ = socket(AF_INET, SOCK_STREAM, 0);
@@ -145,6 +145,7 @@ void localNode::setupListener()
 	std::cout << "Closing listener" << std::endl;
 	// close listening socket 
 	close(listenSocket_);
+	return 0;
 }
 
 void localNode::handleClient()
