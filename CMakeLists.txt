@@ -18,7 +18,7 @@ add_executable(Node
         src/QS/linear-algebra/gauss-elimination.cpp
         src/QS/linear-algebra/matrix.cpp
         src/QS/eratosthenes.cpp
-        src/QS/gmp-patch.c
+        src/QS/gmp-patch.cpp
         src/QS/math-utils.C
         src/QS/QS-parallel.cpp
         src/QS/QS.cpp
@@ -60,7 +60,7 @@ add_executable(User
         src/QS/linear-algebra/gauss-elimination.cpp
         src/QS/linear-algebra/matrix.cpp
         src/QS/eratosthenes.cpp
-        src/QS/gmp-patch.c
+        src/QS/gmp-patch.cpp
         src/QS/math-utils.C
         src/QS/QS-parallel.cpp
         src/QS/QS.cpp
