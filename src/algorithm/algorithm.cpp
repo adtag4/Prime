@@ -263,6 +263,21 @@ ECMState::ECMState(Point p, Point p2, EllipticCurve curve)
 	newP_.setCurve(&curve_);
 }
 
+bool ECMState::isValid()
+{
+	alg::INT left = p_.y_ * p_.y_;
+	alg::INT right = p_.x_ * p_.x_ * p_.x_ + curve_.b_ * p_.x_ + curve_.c_;
+	if(left != right)
+	{
+		return false;
+	}
+	if(curve_.c_ == alg::INT("0"))
+	{
+		return false;
+	}
+	return true;
+}
+
 void ECMState::encode(std::ostream& out)
 {
 	out << p_ << ' ' << newP_ << ' ' << curve_ << ' ' << factor_ << '\n';

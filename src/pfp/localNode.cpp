@@ -35,7 +35,7 @@ void localNode::main()
 
 void localNode::corona()
 {
-	std::this_thread::sleep_for(std::chrono::hours(1)); // when symptoms show
+	std::this_thread::sleep_for(std::chrono::hours(336)); // when the world ends
 	shutdown_ = true;
 }
 
@@ -75,6 +75,11 @@ void localNode::work()
 				alg::ECMState es;
 				ss >> es;
 				std::cout << "localNode::work running " << es << std::endl;
+				if(!es.isValid())
+				{
+					as << "0 0 0 0 0 0 0 -1";
+					break;
+				}
 				alg::ECM ecm(es);
 				alg::runXTimes(as, cycles_, ecm);
 				break;

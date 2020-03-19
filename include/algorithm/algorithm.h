@@ -191,6 +191,8 @@ class ECMState : public AlgStateData
 		~ECMState() {};
 
 		ECMState(Point p, Point p2, EllipticCurve curve);
+	
+		bool 		isValid();
 		
 		Point		p_;	 // basis point
 		Point		newP_;	 // product of basis (coef irrelevant)
