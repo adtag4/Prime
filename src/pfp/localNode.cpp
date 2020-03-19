@@ -1,5 +1,8 @@
 #include "pfp/localNode.h"
 
+namespace pfp
+{
+
 // Server constructor with port to run on
 localNode::localNode(int port) : listenPort_(port)
 {
@@ -205,4 +208,6 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 	// close client/user socket 
 	close(userSocket);
 	// thread frees resources when it exits the function
+}
+
 }
