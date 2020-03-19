@@ -210,7 +210,7 @@ void QS::Sieve()
 
 				//sieving_temp_smooth_numbers[j] is guaranteed to be divisible by tmp_prime_p
 				//TODO: Comment in release code
-				assert(exponent_prime_p != 0);
+				//assert(exponent_prime_p != 0);
 
 				//If the power of tmp_prime_p is odd, we set the corresponding bit in the exponent vector
 				if(exponent_prime_p & 1)
