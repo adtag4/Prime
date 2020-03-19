@@ -48,9 +48,11 @@ void localNode::work()
 		while(jobs_.empty()); // wait until there are jobs to do
 
 		std::cout << "localNode::work found a job to do" << std::endl;		
-
+		
+		std::unique_lock<std::mutex> l(jobs_mutex_);
 		pfp::WorkOrder currentJob = jobs_.front();
 		jobs_.pop();
+		l.~unique_lock();
 		
 		std::cout << "localNode::work working on: " << currentJob << std::endl;
 
@@ -231,8 +233,9 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 	printf("localNode::handleUser stringstream: %s\n", s.str().c_str());
 	s >> wo; // decode WorkOrder from input
 	std::cout << "localNode::handleUser Work Order: " << wo << std::endl;
+	std::unique_lock<std::mutex> l(jobs_mutex_);
 	jobs_.push(wo); // add to queue
-	
+	l.~unique_lock();
 	
 	pfp::WorkResponse answer;
 	while(!searchForMatch(wo, answer))
