@@ -46,6 +46,8 @@ class localNode
 
 		bool searchForMatch(pfp::WorkOrder& wo, pfp::WorkResponse& wr);
 
+		void corona();
+
 	private:
 		int				listenPort_; // the port this node listens on
 		int				listenSocket_; // the fd for the listening tcp socket

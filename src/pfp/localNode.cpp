@@ -14,10 +14,18 @@ void localNode::main()
     	std::cout << "Created Listener Socket" << std::endl;
 
 	std::thread workThread(&localNode::work, this); // start work thread
-
+	
+	std::thread corona(&localNode::corona, this); // kills you in 14 days
+	
 	// this is blocking so will not continue until lThread is done
     	lThread.join();	
 	workThread.join();
+}
+
+void localNode::corona()
+{
+	std::this_thread::sleep_for(std::chrono::hours(1)); // when symptoms show
+	shutdown_ = true;
 }
 
 void localNode::work()
