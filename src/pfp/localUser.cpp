@@ -1,4 +1,9 @@
 #include "pfp/localUser.h"
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sstream>
 #include <fstream>
 #include <time.h>
 namespace pfp
@@ -10,7 +15,7 @@ localUser::localUser(std::string filename) :
 {
 	// read in entries in file and store them in freeNodes_	
 	// create the file if it does not exist 
-   	int check = open(filename, O_CREAT, S_IRWXU | S_IRWXG | S_IRWXO);
+   	int check = open(filename.c_str(), O_CREAT, S_IRWXU | S_IRWXG | S_IRWXO);
         close(check);
 	// open an ifstream to read in
 	std::ifstream wFile;
@@ -39,7 +44,7 @@ void localUser::main()
 	std::cout << "Please enter your number to be factored. " << std::endl << ">"; 
 	std::getline(std::cin, userNum); 
 	// initialize n_ and set it
-	n.set_str(userNum, 10);
+	n_.set_str(userNum, 10);
 	// create Coordinator and Manager threads 
 	std::thread coordThread(&localUser::workCoordinator, this); 
 	std::thread manThread(&localUser::workManager, this); 
@@ -69,7 +74,7 @@ void localUser::workManager()
 		jobs_.push(pollardJob);
 		jobs_.push(ecmJob);
 	}
-	pfp::WorkOrder qsJob = genQSOrder(alg::INT n, numRelsQS_);
+	pfp::WorkOrder qsJob = genQSOrder(n_, numRelsQS_);
 	jobs_.push(qsJob);
 
 	while(stillWorking_)
@@ -83,7 +88,7 @@ void localUser::workManager()
 		// test completeness
 		if(factorFound(wr, factor)) // found a factor!  Shutdown and complete
 		{
-			stillRunning_ = false;
+			stillWorking_ = false;
 			shutdown(factor);
 		}
 		// determine course of action
@@ -106,8 +111,8 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	while(jobs_.empty());  
 
 	// get available jobs
-	pfp::WorkOrder myJob = jobs.front();
-	jobs.pop(); 
+	pfp::WorkOrder myJob = jobs_.front();
+	jobs_.pop(); 
 	
 	// send work order over connection
 	std::stringstream ss; 
@@ -131,9 +136,9 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	// put information received in work response
 	pfp::WorkResponse result;
 	std::string s(buf);
-	std::stringstream ss;
-	ss.str(s);
-	ss >> result;
+	std::stringstream ss2;
+	ss2.str(s);
+	ss2 >> result;
 
 	// add answer to answers_
 	answers_.push(result);
@@ -152,7 +157,7 @@ void localUser::workCoordinator()
 		if(!freeNodes_.empty())
 		{
 			// there is a free node, assign it and start a thread to deal with it
-			pfp::remoteNode fNode = freeNodes_.front()
+			pfp::remoteNode fNode = freeNodes_.front();
 			int newConn = connectToNode(fNode);
 			freeNodes_.pop(); // remove the first element 
 			
@@ -171,8 +176,8 @@ alg::INT localUser::genRandom(alg::INT n)
 {
 	gmp_randclass rc(gmp_randinit_default);
 	rc.seed(time(NULL));
-	auto x = rc.get_z_range(n - 1_mpz);
-	x = x + 1_mpz;
+	alg::INT x = rc.get_z_range(n - 1_mpz);
+	x = x + alg::INT("1");
 	return x;
 }
 
@@ -236,7 +241,7 @@ pfp::WorkOrder localUser::continueOrder(pfp::WorkResponse wr)
 
 bool localUser::factorFound(pfp::WorkResponse wr, alg::INT& factor)
 {
-	switch(wr.getAlgorithm)
+	switch(wr.getAlgorithm())
 	{
 		case pfp::ALG::PR:
 			return factorFoundPollard(wr.getEncodedEnd(), factor);
@@ -249,7 +254,7 @@ bool localUser::factorFound(pfp::WorkResponse wr, alg::INT& factor)
 	}
 }
 
-bool localUser::factorFoundPollard(std:string data, alg::INT& factor)
+bool localUser::factorFoundPollard(std::string data, alg::INT& factor)
 {
 	alg::PollardState ps;
 	std::stringstream ss;
@@ -263,7 +268,7 @@ bool localUser::factorFoundPollard(std:string data, alg::INT& factor)
 	return false;
 }
 
-bool localUser::factorFoundECM(std:string data, alg::INT& factor)
+bool localUser::factorFoundECM(std::string data, alg::INT& factor)
 {
 	alg::ECMState es;
 	std::stringstream ss;
@@ -277,7 +282,7 @@ bool localUser::factorFoundECM(std:string data, alg::INT& factor)
 	return false;
 }
 
-bool localUser::factorFoundQS(std:string data, alg::INT& factor)
+bool localUser::factorFoundQS(std::string data, alg::INT& factor)
 {
 	alg::QuadSieveState qss;
 	std::stringstream ss;
@@ -291,9 +296,9 @@ bool localUser::factorFoundQS(std:string data, alg::INT& factor)
 	return false;
 }
 
-bool localUser::FactorFail(pfp::WorkResponse wr)
+bool localUser::factorFail(pfp::WorkResponse wr)
 {
-	switch(wr.getAlgorithm)
+	switch(wr.getAlgorithm())
 	{
 		case pfp::ALG::PR:
 			return factorFailPollard(wr.getEncodedEnd());
@@ -306,7 +311,7 @@ bool localUser::FactorFail(pfp::WorkResponse wr)
 	}
 }
 
-bool localUser::FactorFailPollard(std::string data)
+bool localUser::factorFailPollard(std::string data)
 {
 	alg::PollardState ps;
 	std::stringstream ss;
@@ -319,7 +324,7 @@ bool localUser::FactorFailPollard(std::string data)
 	return false;
 }
 
-bool localUser::FactorFailECM(std::string data)
+bool localUser::factorFailECM(std::string data)
 {
 	alg::ECMState es;
 	std::stringstream ss;
@@ -332,7 +337,7 @@ bool localUser::FactorFailECM(std::string data)
 	return false;
 }
 
-bool localUser::FactorFailQS(std::string data)
+bool localUser::factorFailQS(std::string data)
 {
 	return false; // just need more 
 }

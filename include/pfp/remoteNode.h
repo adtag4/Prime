@@ -23,7 +23,7 @@ class remoteNode
 	private:
 		std::string	IP_;
 		int		port_;
-}
+};
 
 std::istream& operator >> (std::istream& in, remoteNode& data);
 

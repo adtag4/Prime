@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.10)
 project(Prime)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 
 add_executable(Node
@@ -95,5 +95,5 @@ target_include_directories(User PRIVATE src include src/algorithm src/pfp
         src/QS src/QS/linear-algebra)
 
 
-TARGET_LINK_LIBRARIES( Node pthread)
-TARGET_LINK_LIBRARIES( User pthread)
+TARGET_LINK_LIBRARIES( Node pthread gmp gmpxx mpfr omp)
+TARGET_LINK_LIBRARIES( User pthread gmp gmpxx mpfr omp)
