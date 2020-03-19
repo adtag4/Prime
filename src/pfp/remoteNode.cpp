@@ -75,7 +75,17 @@ int remoteNode::makeConnectionTo()
 	
 }
 
+void remoteNode::decod(std::istream& in)
+{
+	in >> IP_;
+	in >> port_;
+}
 
+std::istream& operator >> (std::istream& in, remoteNode& data)
+{
+	data.decode(in);
+	return in;
+}
 
 
 }
