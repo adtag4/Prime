@@ -186,7 +186,7 @@ bool localNode::searchForMatch(pfp::WorkOrder& wo, pfp::WorkResponse& wr)
 	for(auto x = answers_.begin(); x != answers_.end(); x++)
 	{
 		std::cout << "locaNode::searchForMatch comparing: (" << x->getEncodedStart() << ") and (" << wo.getEncodedState() << ")" << std::endl;
-		std::cout << "ALTERNATE: (" << x->getEncodedStart().c_str() << ") and (" << wo->getEncodedStart().c_str() << ")" << std::endl;
+		std::cout << "ALTERNATE: (" << x->getEncodedStart().c_str() << ") and (" << wo.getEncodedStart().c_str() << ")" << std::endl;
 		if(!strcmp(x->getEncodedStart().c_str(), wo.getEncodedState().c_str()))
 		{
 			wr = *x; // copy out
