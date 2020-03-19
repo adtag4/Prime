@@ -33,7 +33,7 @@ class localNode
 
 	protected:
 		// Sets up socket to listen
-		void setupListener();
+        int setupListener();
 
 		// handles a connection
 		void handleClient();

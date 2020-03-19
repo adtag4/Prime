@@ -1,3 +1,8 @@
+#include <sstream>
+#include <thread>
+#include <algorithm/pollard.h>
+#include <algorithm/ecm.h>
+#include <algorithm/quadratic.h>
 #include "pfp/localNode.h"
 
 namespace pfp
@@ -35,7 +40,7 @@ void localNode::work()
 {
 	while(!shutdown)
 	{
-		while(jobs_.is_empty()); // wait until there are jobs to do
+		while(jobs_.empty()); // wait until there are jobs to do
 		
 		pfp::WorkOrder currentJob = jobs_.pop();
 		std::stringstream ss; // source string
@@ -123,7 +128,7 @@ void localNode::handleClient()
 	if(clientSocket == -1)
 	{
 		std::cerr << "Problem with client connecting";
-		return -1;
+		return;
 	}
 
 	memset(host, 0, NI_MAXHOST);
@@ -178,20 +183,18 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 	if(bytesRecv == -1)
 	{
 		std::cerr << "There was a connection issue" << std::endl;
-		break;
 	}
 	if(bytesRecv == 0)
 	{
 		std::cout << "The client sent a disconnected message" << std::endl;
-		break;
 	}
 	std::cout << "Received: " << std::string(buf, 0, bytesRecv) << std::endl;
 	
 	// Use recvd to put a WorkOrder in the queue
 	pfp::WorkOrder wo;
-	std::stringstream ss;
-	ss.str(buf);
-	ss >> wo; // decode WorkOrder from input
+    std::stringstream s;
+	s.str(buf);
+	s >> wo; // decode WorkOrder from input
 	jobs_.push(wo); // add to queue
 	
 	pfp::WorkResponse answer;
@@ -203,7 +206,7 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 	// encode and send answer
 	std::stringstream ss;
 	ss << answer;
-	send(usersocket, ss.c_str(), ss.length(), 0);
+	send(userSocket, ss.str().c_str(), sizeof(ss), 0);
 
 	// close client/user socket 
 	close(userSocket);
