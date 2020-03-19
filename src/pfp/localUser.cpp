@@ -215,20 +215,103 @@ bool localUser::factorFound(pfp::WorkResponse wr, alg::INT& factor)
 
 bool localUser::factorFoundPollard(std:string data, alg::INT& factor)
 {
-
+	alg::PollardState ps;
+	std::stringstream ss;
+	ss.str(data);
+	ss >> ps;
+	if(ps.d_ != 1_mpz && ps.d_ != n_)
+	{
+		factor = ps.d_;
+		return true;
+	}
+	return false;
 }
 
 bool localUser::factorFoundECM(std:string data, alg::INT& factor)
 {
-
+	alg::ECMState es;
+	std::stringstream ss;
+	ss.str(data);
+	ss >> es;
+	if(es.factor_ != alg::INT("-1") && es.factor_ != alg::INT("0"))
+	{
+		factor = es.factor_;
+		return true;
+	}
+	return false;
 }
 
 bool localUser::factorFoundQS(std:string data, alg::INT& factor)
 {
-
+	alg::QuadSieveState qss;
+	std::stringstream ss;
+	ss.str(data);
+	ss >> qss;
+	if(qss.factor_ != alg::INT("0"))
+	{
+		factor = qss.factor_;
+		return true;
+	}
+	return false;
 }
 
+bool localUser::FactorFail(pfp::WorkResponse wr)
+{
+	switch(wr.getAlgorithm)
+	{
+		case pfp::ALG::PR:
+			return factorFailPollard(wr.getEncodedEnd());
+		case pfp::ALG::ECM:
+			return factorFailECM(wr.getEncodedEnd());
+		case pfp::ALG::QS:
+			return factorFailQS(wr.getEncodedEnd());
+		default:
+			return true;
+	}
+}
 
+bool localUser::FactorFailPollard(std::string data)
+{
+	alg::PollardState ps;
+	std::stringstream ss;
+	ss.str(data);
+	ss >> ps;
+	if(ps.d_ == ps.n_)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool localUser::FactorFailECM(std::string data)
+{
+	alg::ECMState es;
+	std::stringstream ss;
+	ss.str(data);
+	ss >> es;
+	if(es.factor_ == alg::INT("-1"))
+	{
+		return true;
+	}
+	return false;
+}
+
+bool localUser::FactorFailQS(std::string data)
+{
+	return false; // just need more 
+}
+
+void localUser::shutdown(alg::INT factor)
+{
+	factors_.push_back(factor);
+	factors_.push_back(n_/factor);
+}
+
+void localUser::printSolution()
+{
+	std::cout << "The factors to: " << std::endl << n_ << std::endl << "are: " << std::endl;
+	std::cout << "P=" << factors_[0] << std::endl << "Q=" << factors_[1] << std::endl;
+}
 
 
 
