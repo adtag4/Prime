@@ -282,7 +282,7 @@ bool ECMState::isValid()
 
 void ECMState::encode(std::ostream& out)
 {
-	out << p_ << ' ' << newP_ << ' ' << curve_ << ' ' << factor_ << '\n';
+	out << p_ << ' ' << newP_ << ' ' << curve_ << ' ' << factor_;
 }
 
 void ECMState::decode(std::istream& in)
