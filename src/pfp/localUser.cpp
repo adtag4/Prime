@@ -79,7 +79,7 @@ void localUser::workManager()
 	alg::INT x = 2_mpz;
 	alg::INT y = x;
 	alg::INT d = 1_mpz;
-	alg::PollardState ps(x, y, d, n_);
+	alg::PollardState ps(n_, x, y, d);
 	std::stringstream ss;
 	ss << ps;
 	pfp::WorkOrder firstwo(pfp::ALG::PR, ss.str());
@@ -212,7 +212,7 @@ pfp::WorkOrder localUser::genRandomPollardOrder(alg::INT n)
 	alg::INT x = genRandom(n);
 	alg::INT y = x;
 	alg::INT d = 1_mpz;
-	alg::PollardState ps(x, y, d, n);
+	alg::PollardState ps(n, x, y, d);
 	std::stringstream ss;
 	ss << ps;
 	pfp::WorkOrder wo(pfp::ALG::PR, ss.str());
