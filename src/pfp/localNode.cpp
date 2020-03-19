@@ -42,8 +42,9 @@ void localNode::corona()
 void localNode::work()
 {
 	std::cout << "Work thread started" << std::endl;
-	while(!shutdown)
+	while(!shutdown_)
 	{
+		
 		while(jobs_.empty()); // wait until there are jobs to do
 
 		std::cout << "localNode::work found a job to do" << std::endl;		
