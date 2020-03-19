@@ -50,10 +50,11 @@ class localNode
 		int				listenPort_; // the port this node listens on
 		int				listenSocket_; // the fd for the listening tcp socket
 		struct sockaddr_in		hint_;
-		std::vector<std::thread>	threadPool_;
 		bool				shutdown_;
-		std::vector<pfp::remoteNode>	network_;
 		std::queue<pfp::WorkOrder>	jobs_;
+		int				cycles_;
+		std::vector<pfp::WorkResponse>	answers_;
+		std::mutex			answer_mutex_;
 }
 
 

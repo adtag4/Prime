@@ -4,10 +4,63 @@
 localNode::localNode(int port) : listenPort_(port)
 {
     	// create the listening thread which will run the whole life
-    	std::thread lThread(&localNode::setupListener, this); 
+	shutdown_ = false;
+	cycles_ = 1000;
+}
+
+void localNode::main()
+{
+	std::thread lThread(&localNode::setupListener, this); 
     	std::cout << "Created Listener Socket" << std::endl;
+
+	std::thread workThread(&localNode::work, this); // start work thread
+
 	// this is blocking so will not continue until lThread is done
     	lThread.join();	
+	workThread.join();
+}
+
+void localNode::work()
+{
+	while(!shutdown)
+	{
+		while(jobs_.is_empty()); // wait until there are jobs to do
+		
+		pfp::WorkOrder currentJob = jobs_.pop();
+		std::stringstream ss; // source string
+		std::stringstream as; // answer string
+		ss.str(currentJob.getEncodedState());
+		switch(currentJob.getAlgorithm())
+		{
+			case pfp::ALG::PR:
+				alg::PollardState ps;
+				ss >> ps;
+				alg::Pollard p(ps);
+				runXTimes(as, cycles_, p);
+				break;
+			case pfp::ALG::ECM:
+				alg::ECMState es;
+				ss >> es;
+				alg::ECM ecm(es);
+				runXTimes(as, cycles_, ecm);
+				break;
+			case pfp::ALG::QS:
+				alg::QuadSieveState qss;
+				ss >> qss;
+				alg::QuadSieve qs(qss);
+				runXTimes(as, 1, qs); // different because only runs once.  
+				break;
+			default:
+				std::cerr << "Wierd input lol" << std::endl; // none algorithm - just ignore
+		}
+		pfp::WorkResponse wr(currentJob.getAlgorithm(), currentJob.getEncodedState(), as.str());
+		
+		
+		std::unique_lock<std::mutex> lock(answer_mutex_);
+		answers_.push_back(wr); // add to list of finished work
+
+		// and RAII cleans up!
+	}
 }
 
 int localNode::setupListener()
@@ -36,7 +89,7 @@ int localNode::setupListener()
 		std::cerr << "Server can't listen";
 		return -1;
 	}
-	while(_shutdown != 1)
+	while(!shutdown_)
 	{
 		handleClient();
 	}
@@ -86,6 +139,20 @@ bool localNode::searchForMatch(pfp::WorkOrder& wo, pfp::WorkResponse& wr)
 	// searches queue/vector of answers for one matching wo given.  
 		// if not found - false
 		// if found: copy to wr and ret true
+
+	std::unique_lock<std::mutex> lock(answer_mutex_);
+	for(auto x = answers_.begin(); x != answers_.end(); x++)
+	{
+		if(x->getEncodedStart() == wo.getEncodedState())
+		{
+			wr = *x; // copy out
+			answers_.erase(x);
+			return true;
+		}
+	}
+	return false;
+
+	// RAII cleans up lock
 }
 
 void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
@@ -117,7 +184,10 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 	jobs_.push(wo); // add to queue
 	
 	pfp::WorkResponse answer;
-	while(!searchForMatch(wo, answer));
+	while(!searchForMatch(wo, answer))
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+	}
 	
 	// encode and send answer
 	std::stringstream ss;
