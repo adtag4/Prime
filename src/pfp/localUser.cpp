@@ -6,6 +6,8 @@
 #include <sstream>
 #include <fstream>
 #include <time.h>
+#include <sstream>
+
 namespace pfp
 {
 
@@ -112,7 +114,7 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 
 	// get available jobs
 	pfp::WorkOrder myJob = jobs_.front();
-	jobs_.pop(); 
+	jobs_.pop();
 	
 	// send work order over connection
 	std::stringstream ss; 
@@ -212,7 +214,7 @@ pfp::WorkOrder localUser::genQSOrder(alg::INT n, int numRels)
 {
 	alg::QuadSieveState qss(n, numRels);
 	std::stringstream ss;
-	ss << qss;
+	ss << qss ;
 	pfp::WorkOrder wo(pfp::ALG::QS, ss.str());
 	return wo;
 }
