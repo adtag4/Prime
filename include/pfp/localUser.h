@@ -57,9 +57,9 @@ class localUser
 		bool		factorFoundECM(std::string data, alg::INT& factor);
 		bool		factorFoundQS(std::string data, alg::INT& factor);
 		bool		factorFail(pfp::WorkResponse wr);
-		bool		factorFailPollard(pfp::WorkResponse wr);
-		bool		factorFailECM(pfp::WorkResponse wr);
-		bool		factorFailQS(pfp::WorkResponse wr);
+		bool		factorFailPollard(std::string data);
+		bool		factorFailECM(std::string data);
+		bool		factorFailQS(std::string data);
 		void		shutdown(alg::INT factor); // divides out modulus and outputs to user.
 		void 		printSolution();
 };
