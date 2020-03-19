@@ -19,8 +19,7 @@ class remoteNode
 
 		friend std::istream& operator >> (std::istream& in, remoteNode& data);
 
-	protected:
-	private:
+
 		std::string	IP_;
 		int		port_;
 };
