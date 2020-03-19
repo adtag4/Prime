@@ -41,7 +41,7 @@ class localUser
 		std::vector<std::thread>	threadPool_;
 		std::vector<alg::INT>		factors_;
 		bool				stillWorking_;
-		std::queue<pfp::remoteNode>	freeNodes_;
+		std::queue<pfp::remoteNode>	freeNodes_; // holds the list of nodes read in from file 
 }
 
 
