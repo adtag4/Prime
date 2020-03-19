@@ -38,12 +38,11 @@ void main()
 	std::cout << "Please enter your number to be factored. " << std::endl << ">"; 
 	std::getline(std::cin, userNum); 
 	// initialize n_ and set it
-	mpz_init(n_);
-	mpz_set_str(n_, userNum, 10);
+	n.set_str(userNum, 10);
 	// create Coordinator and Manager threads 
 	std::thread coordThread(&localUser::workCoordinator, this); 
 	std::thread manThread(&localUser::workManager, this); 
-
+	
 
 
 	coordThread.join();
@@ -55,24 +54,49 @@ void main()
 // sets up socket connection
 int connectToNode(pfp::remoteNode node)
 {
-
+	node.makeConnectionTo();
 }
 
 // creates work orders, removes aswers
 void workManager()
 {
+	while(stillWorking_)
+	{
+		// create work orders if needed 
 
+		// remove answers 
+
+		// if answer found, send shutdown signal 
+
+	}
 }
 
 // sends work order, waits for reply, adds ans and free node
 void handleConnection(int socketFD)
 {
+	// send work  order over connection
 
+	// wait for answer
+
+	// add answer to answers_
+
+	// put node back in freeNodes_
+	
 }
 
 // removes work orders and sends to free nodes
 void workCoordinator()
 {
+	while(stillWorking_)
+	{
+		// check for any free nodes
+
+		// if there is a free node, assign it and start a thread to deal with it
+
+		// connecToNode()
+
+
+	}
 
 }
 
