@@ -1,4 +1,4 @@
-#include "pfp.h"
+#include <pfp/pfp.h>
 
 
 namespace pfp
@@ -81,7 +81,7 @@ void WorkOrder::decode(std::istream& in)
 			break;
 		default:
 			std::cerr << "Broken message, can't do anything" << std::endl;
-			algorithm_ = NONE;
+			algorithm_ = static_cast<ALG>(NULL);
 	}
 }
 
