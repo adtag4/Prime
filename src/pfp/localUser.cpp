@@ -121,6 +121,7 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	// get available jobs
 	pfp::WorkOrder myJob = jobs_.front();
 	jobs_.pop();
+	std::cout << "Remaining jobs in queue:" << jobs_.size() << std::endl; 
 	
 	// send work order over connection
 	std::stringstream ss; 
@@ -174,6 +175,7 @@ void localUser::workCoordinator()
 			pfp::remoteNode fNode = freeNodes_.front();
 			int newConn = connectToNode(fNode);
 			freeNodes_.pop(); // remove the first element 
+			std::cout << "REMAINING FREE NODES FOR WORK:" << freeNodes_.size() << std::endl;
 			
 			std::thread(&localUser::handleConnection, this, newConn, fNode).detach();
 		}
