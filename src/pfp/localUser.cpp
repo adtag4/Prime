@@ -125,7 +125,8 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	std::stringstream ss; 
 	ss << myJob;
 	std::cout << "JOB SENT IS:" << ss.str().c_str() << std::endl;
-	send(socketFD, ss.str().c_str(), sizeof(ss.str().c_str() + 1), 0);
+	int bytesSent = send(socketFD, ss.str().c_str(), sizeof(ss.str().c_str() + 1), 0);
+	std::cout << "USER SENT __" << bytesSent << "__ BYTES" << std::endl;
 	
 	// wait for answer
 	char buf[4096];
