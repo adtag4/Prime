@@ -33,7 +33,7 @@ class localUser
 	protected:
 		int 	connectToNode(pfp::remoteNode node); // sets up socket connection
 		void	workManager(); // creates work orders, removes aswers
-		void	handleConnection(int socketFD, pfp::remoteNode node);// sends work order, waits for reply, adds ans and free node
+		void	handleConnection(int socketFD, pfp::remoteNode node, pfp::WorkOrder myJob);// sends work order, waits for reply, adds ans and free node
 		void 	workCoordinator(); // removes work orders and sends to free nodes
 		
 	private:

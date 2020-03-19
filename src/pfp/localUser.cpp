@@ -15,7 +15,7 @@ namespace pfp
 localUser::localUser(std::string filename) : 
 		stillWorking_(true),
 		rc_(gmp_randinit_default),
-		numRandomOrders_(5)
+		numRandomOrders_(0)
 {
 	// read in entries in file and store them in freeNodes_	
 	// create the file if it does not exist 
@@ -85,6 +85,7 @@ void localUser::workManager()
 	ss << ps;
 	pfp::WorkOrder firstwo(pfp::ALG::PR, ss.str());
 	jobs_.push(firstwo);
+	std::cout << "FIRST JOB:" << firstwo << std::endl;
 	
 	// Initial work order creation
 	for(auto x = 0; x < numRandomOrders_; x++)
@@ -93,9 +94,11 @@ void localUser::workManager()
 		pfp::WorkOrder ecmJob     = genRandomECMOrder(n_);
 		jobs_.push(pollardJob);
 		jobs_.push(ecmJob);
+		std::cout << "ADDED JOB:" << pollardJob << std::endl;
+		std::cout << "ADDED JOB:" << ecmJob << std::endl;
 	}
-	pfp::WorkOrder qsJob = genQSOrder(n_, numRelsQS_);
-	jobs_.push(qsJob);
+	//pfp::WorkOrder qsJob = genQSOrder(n_, numRelsQS_);
+	//jobs_.push(qsJob);
 	l.~unique_lock();
 
 	while(stillWorking_)
@@ -125,24 +128,14 @@ void localUser::workManager()
 		pfp::WorkOrder newOrder = continueOrder(wr);
 		std::unique_lock<std::mutex> j(jobs_mutex_);
 		jobs_.push(newOrder); // add to queue
-		std::cout << "***CONTINUATION ORDER***:" << newOrder << std::endl;
+		std::cout << "***ADDED CONTINUATION ORDER***:" << newOrder << std::endl;
 		j.~unique_lock();
 	}
 }
 
 // sends work order, waits for reply, adds ans and free node
-void localUser::handleConnection(int socketFD, pfp::remoteNode node)
+void localUser::handleConnection(int socketFD, pfp::remoteNode node, pfp::WorkOrder myJob)
 {
-	// check to make sure work is there to be done
-	while(jobs_.empty());  
-
-	// get available jobs
-	std::unique_lock<std::mutex> l(jobs_mutex_);
-	pfp::WorkOrder myJob = jobs_.front();
-	jobs_.pop();
-	l.~unique_lock();
-	//std::cout << "Remaining jobs in queue:" << jobs_.size() << std::endl; 
-	
 	// send work order over connection
 	std::stringstream ss; 
 	ss << myJob;
@@ -168,7 +161,8 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	//std::cout << "RECEIVED " << bytesRecv << " BYTES" << std::endl;
 	pfp::WorkResponse result;
 	std::string s(buf);
-	//std::cout << "RECEIVED INFORMATION IN STRING:" << s << std::endl;
+	std::cout << "RECEIVED ___" << bytesRecv << "___ bytes" << std::endl;
+	std::cout << "RECEIVED INFORMATION IN STRING:" << s << std::endl;
 	std::stringstream ss2;
 	ss2.str(s);
 	//std::cout << "SS2 IS:" << ss2.str().c_str() << std::endl;
@@ -204,8 +198,17 @@ void localUser::workCoordinator()
 			freeNodes_.pop(); // remove the first element 
 			l.~unique_lock();
 			//std::cout << "REMAINING FREE NODES FOR WORK:" << freeNodes_.size() << std::endl;
-			
-			std::thread(&localUser::handleConnection, this, newConn, fNode).detach();
+
+			// check to make sure work is there to be done
+			while(jobs_.empty());  
+
+			// get available jobs
+			std::unique_lock<std::mutex> j(jobs_mutex_);
+			pfp::WorkOrder myJob = jobs_.front();
+			jobs_.pop();
+			j.~unique_lock();
+			//std::cout << "Remaining jobs in queue:" << jobs_.size() << std::endl; 
+			std::thread(&localUser::handleConnection, this, newConn, fNode, myJob).detach();
 		}
 
 
@@ -364,6 +367,10 @@ bool localUser::factorFailPollard(std::string data)
 	ss.str(data);
 	ss >> ps;
 	if(ps.d_ == ps.n_)
+	{
+		return true;
+	}
+	if(ps.d_ == alg::INT("0"))
 	{
 		return true;
 	}
