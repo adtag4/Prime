@@ -15,7 +15,7 @@ namespace pfp
 localUser::localUser(std::string filename) : 
 		stillWorking_(true),
 		rc_(gmp_randinit_default),
-		numRandomOrders_(0)
+		numRandomOrders_(100)
 {
 	// read in entries in file and store them in freeNodes_	
 	// create the file if it does not exist 
@@ -97,8 +97,8 @@ void localUser::workManager()
 		std::cout << "ADDED JOB:" << pollardJob << std::endl;
 		std::cout << "ADDED JOB:" << ecmJob << std::endl;
 	}
-	//pfp::WorkOrder qsJob = genQSOrder(n_, numRelsQS_);
-	//jobs_.push(qsJob);
+	pfp::WorkOrder qsJob = genQSOrder(n_, numRelsQS_);
+	jobs_.push(qsJob);
 	l.~unique_lock();
 
 	while(stillWorking_)
@@ -161,13 +161,16 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node, pfp::WorkOr
 	//std::cout << "RECEIVED " << bytesRecv << " BYTES" << std::endl;
 	pfp::WorkResponse result;
 	std::string s(buf);
-	std::cout << "RECEIVED ___" << bytesRecv << "___ bytes" << std::endl;
-	std::cout << "RECEIVED INFORMATION IN STRING:" << s << std::endl;
+	//std::cout << "RECEIVED ___" << bytesRecv << "___ bytes" << std::endl;
+	//std::cout << "RECEIVED INFORMATION IN STRING:" << s << std::endl;
 	std::stringstream ss2;
 	ss2.str(s);
 	//std::cout << "SS2 IS:" << ss2.str().c_str() << std::endl;
 	ss2 >> result;
 	std::cout << "RESULT IS:" << result << std::endl;
+
+	// close socket after use
+	close(socketFD);
 
 	// add answer to answers_
 	std::unique_lock<std::mutex> a(answers_mutex_);

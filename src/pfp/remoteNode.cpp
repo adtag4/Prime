@@ -11,6 +11,8 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <dirent.h>
+#include <chrono>
+#include <thread>
 
 namespace pfp
 {
@@ -57,10 +59,17 @@ int remoteNode::makeConnectionTo()
 
 
 	int sockFD = socket(AF_INET, SOCK_STREAM, 0); // Make TCP/IPV4 socket
-	if(sockFD == -1)
+	// deal with it being an error - keep trying 
+	int attempts = 0;
+	while(sockFD == -1)
 	{
-		std::cerr << "You suck" << std::endl;
-		exit(-1);
+		std::cerr << "Error: " << strerror(errno) << ", errno: " << errno << std::endl;
+		if(attempts == 10) // too many tries and failes so quit
+		{
+			exit(-1);
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		int sockFD = socket(AF_INET, SOCK_STREAM, 0); // Make TCP/IPV4 socket
 	}
 
 	err = connect(sockFD, (struct sockaddr *) &serv_addr, sizeof(serv_addr));
