@@ -4,6 +4,7 @@
 #include <algorithm/ecm.h>
 #include <algorithm/quadratic.h>
 #include "pfp/localNode.h"
+#include <stdio.h>
 
 namespace pfp
 {
@@ -41,9 +42,14 @@ void localNode::work()
 	while(!shutdown)
 	{
 		while(jobs_.empty()); // wait until there are jobs to do
-		
+
+		std::cout << "localNode::work found a job to do" << std::endl;		
+
 		pfp::WorkOrder currentJob = jobs_.front();
 		jobs_.pop();
+		
+		std::cout << "localNode::work working on: " << currentJob << std::endl;
+
 		std::stringstream ss; // source string
 		std::stringstream as; // answer string
 		ss.str(currentJob.getEncodedState());
@@ -51,6 +57,7 @@ void localNode::work()
 		{
 			case pfp::ALG::PR:
 			{
+				std::cout << "localNode::work Job is pollard" << std::endl;
 				alg::PollardState ps;
 				ss >> ps;
 				alg::Pollard p(ps);
@@ -59,6 +66,7 @@ void localNode::work()
 			}
 			case pfp::ALG::ECM:
 			{
+				std::cout << "localNode::work Job is ECM" << std::endl;
 				alg::ECMState es;
 				ss >> es;
 				alg::ECM ecm(es);
@@ -67,6 +75,7 @@ void localNode::work()
 			}
 			case pfp::ALG::QS:
 			{
+				std::cout << "locclNode::work Job is QS" << std::endl;
 				alg::QuadSieveState qss;
 				ss >> qss;
 				alg::QuadSieve qs(qss);
@@ -195,20 +204,25 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 	{
 		std::cout << "The client sent a disconnected message" << std::endl;
 	}
-	std::cout << "Received: " << std::string(buf, 0, bytesRecv) << std::endl;
-	
+	//std::cout << "Received: " << std::string(buf, 0, bytesRecv) << std::endl;
+	printf("localNode::handleUser Received: %s\n: ", buf);
+
 	// Use recvd to put a WorkOrder in the queue
 	pfp::WorkOrder wo;
-    std::stringstream s;
+	std::stringstream s;
 	s.str(buf);
 	s >> wo; // decode WorkOrder from input
+	std::cout << "localNode::handleUser Work Order: " << wo << std::endl;
 	jobs_.push(wo); // add to queue
+	
 	
 	pfp::WorkResponse answer;
 	while(!searchForMatch(wo, answer))
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(2));
+		std::cout << "localNode::handleUser No answer yet" << std::endl;
 	}
+	std::cout << "localNode::handleUser found answer: " << answer << std::endl;
 	
 	// encode and send answer
 	std::stringstream ss;

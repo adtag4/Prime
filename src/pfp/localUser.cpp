@@ -13,7 +13,8 @@ namespace pfp
 
 // Server constructor with port to run on
 localUser::localUser(std::string filename) : 
-		stillWorking_(true)
+		stillWorking_(true),
+		rc_(gmp_randinit_default)
 {
 	// read in entries in file and store them in freeNodes_	
 	// create the file if it does not exist 
@@ -36,6 +37,8 @@ localUser::localUser(std::string filename) :
 		}
 		wFile.close();
    	}
+
+	rc_.seed(time(NULL));		
 }
 
 // the method that the main code will run
@@ -183,9 +186,7 @@ void localUser::workCoordinator()
  *************************************************/
 alg::INT localUser::genRandom(alg::INT n)
 {
-	gmp_randclass rc(gmp_randinit_default);
-	rc.seed(time(NULL));
-	alg::INT x = rc.get_z_range(n - 1_mpz);
+	alg::INT x = rc_.get_z_range(n - 1_mpz);
 	x = x + alg::INT("1");
 	return x;
 }
