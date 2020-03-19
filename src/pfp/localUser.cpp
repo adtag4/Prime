@@ -50,6 +50,7 @@ void localUser::main()
 	std::getline(std::cin, userNum); 
 	// initialize n_ and set it
 	n_.set_str(userNum, 10);
+	std::cout << "Your number is: " << n_ << std::endl;
 	// create Coordinator and Manager threads 
 	std::thread coordThread(&localUser::workCoordinator, this); 
 	std::thread manThread(&localUser::workManager, this); 
@@ -65,6 +66,7 @@ void localUser::main()
 // sets up socket connection
 int localUser::connectToNode(pfp::remoteNode node)
 {
+	std::cerr << "localUser::connectToNode(" << node.IP_ << ", " << node.port_ << ")" << std::endl;
 	return node.makeConnectionTo();
 }
 
@@ -122,6 +124,7 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 	// send work order over connection
 	std::stringstream ss; 
 	ss << myJob;
+	std::cout << "JOB SENT IS:" << ss.str().c_str << std::endl;
 	send(socketFD, ss.str().c_str(), sizeof(ss.str().c_str() + 1), 0);
 	
 	// wait for answer
@@ -139,11 +142,15 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 		std::cout << "The node sent a disconnected message" << std::endl;
 	}
 	// put information received in work response
+	std::cout << "RECEIVED " << bytesRecv << " BYTES" << std::endl;
 	pfp::WorkResponse result;
 	std::string s(buf);
+	std::cout << "RECEIVED INFORMATION IN STRING:" << s << std::endl;
 	std::stringstream ss2;
 	ss2.str(s);
+	std::cout << "SS2 IS:" << ss2 << std::endl;
 	ss2 >> result;
+	std::cout << "RESULT IS:" << result << std::endl;
 
 	// add answer to answers_
 	answers_.push(result);
