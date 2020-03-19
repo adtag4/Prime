@@ -41,7 +41,13 @@ void main()
 	mpz_init(n_);
 	mpz_set_str(n_, userNum, 10);
 	// create Coordinator and Manager threads 
-	std::thread coordThread(&localNode::setupListener, this); 
+	std::thread coordThread(&localUser::workCoordinator, this); 
+	std::thread manThread(&localUser::workManager, this); 
+
+
+
+	coordThread.join();
+	manThread.join();
 
 
 }
