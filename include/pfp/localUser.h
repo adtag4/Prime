@@ -11,6 +11,7 @@
 #include <queue>
 #include <thread>
 #include <iostream>
+#include <mutex>
 
 #include "algorithm/algorithm.h"
 #include "pfp/pfp.h"
@@ -46,6 +47,11 @@ class localUser
 		int				numRelsQS_;	// number of linear relations to start with for QS
 		std::vector<alg::INT>		factors_; // list of found factors to modulus
 		gmp_randclass			rc_;
+		std::mutex			jobs_mutex_;
+		std::mutex			answers_mutex_;
+		std::mutex			freeNodes_mutex_;
+
+		
 
 		// helper functions
 		alg::INT	genRandom(alg::INT n); // random between 1...n-1

@@ -52,15 +52,15 @@ void localUser::main()
 	std::getline(std::cin, userNum); 
 	// initialize n_ and set it
 	n_.set_str(userNum, 10);
-	//std::cout << "Your number is: " << n_ << std::endl;
+	std::cout << "Your number is: " << n_ << std::endl;
 	// create Coordinator and Manager threads 
-	std::thread coordThread(&localUser::workCoordinator, this); 
 	std::thread manThread(&localUser::workManager, this); 
+	std::thread coordThread(&localUser::workCoordinator, this); 
+
 	
 
-
-	coordThread.join();
 	manThread.join();
+	coordThread.join();
 
 	printSolution();
 }
@@ -178,6 +178,8 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node)
 // removes work orders and sends to free nodes
 void localUser::workCoordinator()
 {
+	// give manager time to start 
+	std::this_thread::sleep_for(std::chrono::milliseconds(20));
 	while(stillWorking_)
 	{
 		// check for any free nodes
@@ -261,7 +263,11 @@ pfp::WorkOrder localUser::continueOrder(pfp::WorkResponse wr)
 	}
 	else
 	{
-		return pfp::WorkOrder(wr.getAlgorithm(), wr.getEncodedEnd()); // the end is the beginning
+		pfp::WorkOrder res(wr.getAlgorithm(), wr.getEncodedEnd()); 
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		return res;
+		
+		//return pfp::WorkOrder(wr.getAlgorithm(), wr.getEncodedEnd()); // the end is the beginning
 	}
 }
 
