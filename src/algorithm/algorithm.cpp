@@ -136,7 +136,7 @@ Point Point::add(const Point& p)
 	if(curve_ == nullptr)
 	{
 		//DEBUG
-		std::cout << "You done messed up A-Aron - curve_==nullptr in Point::add()" << std::endl;
+//		std::cout << "You done messed up A-Aron - curve_==nullptr in Point::add()" << std::endl;
 
 		throw p; // seriously, you shouldn't end up here.  Don't forget to set the curve
 	}
@@ -148,7 +148,7 @@ Point Point::add(const Point& p)
 	if((x_ == p.x_) && (y_ == p.y_)) // adding P+P
 	{
 		// DEBUG
-		std::cout << "\tAdding point to self." << std::endl;
+//		std::cout << "\tAdding point to self." << std::endl;
 
 		numerator 	= alg::INT("3") * x_ * x_ + curve_->b_;
 		denominator 	= alg::INT("2") * y_;
@@ -157,7 +157,7 @@ Point Point::add(const Point& p)
 	else // adding different points
 	{
 		// DEBUG
-		std::cout << "\tAdding different points." << std::endl;
+//		std::cout << "\tAdding different points." << std::endl;
 
 		numerator	= p.y_ - y_;
 		denominator	= p.x_ - x_;
@@ -168,8 +168,8 @@ Point Point::add(const Point& p)
 	denominator = (denominator + curve_->n_) % curve_->n_;
 
 	//DEBUG
-	std::cout << "\tM num: " << numerator << std::endl;
-	std::cout << "\tM den: " << denominator << std::endl;
+//	std::cout << "\tM num: " << numerator << std::endl;
+//	std::cout << "\tM den: " << denominator << std::endl;
 	
 	if(denominator == alg::INT("0")) // m is infinite :(
 	{
@@ -183,7 +183,7 @@ Point Point::add(const Point& p)
 	if(alg::inverse(denominator, curve_->n_, inv)) // inverse exists, calculate next point
 	{
 		// DEBUG
-		std::cout << "\tFound inverse, m: ";
+///		std::cout << "\tFound inverse, m: ";
 
 		alg::INT m = (numerator * inv) % curve_->n_;
 
@@ -202,7 +202,7 @@ Point Point::add(const Point& p)
 	else // inverse doesn't exist, throw the new factor
 	{
 		// DEBUG
-		std::cout << "\tNo inverse, gcd: " << inv << std::endl;
+//		std::cout << "\tNo inverse, gcd: " << inv << std::endl;
 
 		throw inv; // the gcd
 	}
@@ -213,7 +213,7 @@ Point Point::add(const Point& p)
 Point Point::operator + (Point& p)
 {
 	// DEBUG
-	std::cout << "Adding " << *this << " + " << p << std::endl;
+//	std::cout << "Adding " << *this << " + " << p << std::endl;
 	
 	return add(p);
 }
