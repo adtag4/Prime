@@ -42,30 +42,37 @@ void localNode::work()
 	{
 		while(jobs_.empty()); // wait until there are jobs to do
 		
-		pfp::WorkOrder currentJob = jobs_.pop();
+		pfp::WorkOrder currentJob = jobs_.front();
+		jobs_.pop();
 		std::stringstream ss; // source string
 		std::stringstream as; // answer string
 		ss.str(currentJob.getEncodedState());
 		switch(currentJob.getAlgorithm())
 		{
 			case pfp::ALG::PR:
+			{
 				alg::PollardState ps;
 				ss >> ps;
 				alg::Pollard p(ps);
-				runXTimes(as, cycles_, p);
+				alg::runXTimes(as, cycles_, p);
 				break;
+			}
 			case pfp::ALG::ECM:
+			{
 				alg::ECMState es;
 				ss >> es;
 				alg::ECM ecm(es);
-				runXTimes(as, cycles_, ecm);
+				alg::runXTimes(as, cycles_, ecm);
 				break;
+			}
 			case pfp::ALG::QS:
+			{
 				alg::QuadSieveState qss;
 				ss >> qss;
 				alg::QuadSieve qs(qss);
-				runXTimes(as, 1, qs); // different because only runs once.  
+				alg::runXTimes(as, 1, qs); // different because only runs once.  
 				break;
+			}
 			default:
 				std::cerr << "Wierd input lol" << std::endl; // none algorithm - just ignore
 		}
@@ -146,7 +153,7 @@ void localNode::handleClient()
 		std::cout << host << " connected on " << ntohs(client.sin_port) << std::endl;
 	}
 	// create thread for working with client
-        std::thread(&localNode::handleUser, this, client, clientSocket).detach();
+        std::thread(&localNode::handleUser, this, clientSocket, client).detach();
 
 }
 
