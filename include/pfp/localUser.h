@@ -32,7 +32,7 @@ class localUser
 	protected:
 		int 	connectToNode(pfp::remoteNode node); // sets up socket connection
 		void	workManager(); // creates work orders, removes aswers
-		void	handleConnection(int socketFD); // sends work order, waits for reply, adds ans and free node
+		void	handleConnection(int socketFD, pfp::remoteNode node);// sends work order, waits for reply, adds ans and free node
 		void 	workCoordinator(); // removes work orders and sends to free nodes
 		
 	private:
@@ -40,9 +40,28 @@ class localUser
 		std::queue<pfp::WorkResponse>	answers_;
 		alg::INT			n_; // number to factor
 		std::vector<std::thread>	threadPool_;
-		std::vector<alg::INT>		factors_;
 		bool				stillWorking_;
 		std::queue<pfp::remoteNode>	freeNodes_; // holds the list of nodes read in from file 
+		int				numRandomOrders_; // number of random Pollard and ECM orders to start
+		int				numRelsQS_;	// number of linear relations to start with for QS
+		std::vector<alg::INT>		factors_; // list of found factors to modulus
+
+		// helper functions
+		alg::INT	genRandom(alg::INT n); // random between 1...n-1
+		pfp::WorkOrder	genRandomPollardOrder(alg::INT n);
+		pfp::WorkOrder	genRandomECMOrder(alg::INT n);
+		pfp::WorkOrder	genQSOrder(alg::INT n, int numRels);
+		pfp::WorkOrder	continueOrder(pfp::WorkResponse wr);
+		bool		factorFound(pfp::WorkResponse wr, alg::INT& factor);
+		bool		factorFoundPollard(std::string data, alg::INT& factor);
+		bool		factorFoundECM(std::string data, alg::INT& factor);
+		bool		factorFoundQS(std::string data, alg::INT& factor);
+		bool		factorFail(pfp::WorkResponse wr);
+		bool		factorFailPollard(std::string data);
+		bool		factorFailECM(std::string data);
+		bool		factorFailQS(std::string data);
+		void		shutdown(alg::INT factor); // divides out modulus and outputs to user.
+		void 		printSolution();
 };
 
 
