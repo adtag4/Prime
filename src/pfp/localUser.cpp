@@ -100,46 +100,15 @@ void localUser::workManager()
 }
 
 // sends work order, waits for reply, adds ans and free node
-void localUser::handleConnection(int socketFD, pfp::remoteNode node)
+void localUser::handleConnection(int socketFD)
 {
-	// check to make sure work is there to be done
-	while(jobs_.empty());  
+	// send work  order over connection
 
-	// get available jobs
-	pfp::WorkOrder myJob = jobs.front();
-	jobs.pop(); 
-	
-	// send work order over connection
-	std::stringstream ss; 
-	ss << myJob;
-	send(socketFD, ss.str().c_str(), sizeof(ss.str().c_str() + 1), 0);
-	
 	// wait for answer
-	char buf[4096];
-	// clear the buffer
-	memset(buf, 0, 4096);
-	// wait for message
-	int bytesRecv = recv(socketFD, buf, 4096, 0);
-	if(bytesRecv == -1)
-	{
-		std::cerr << "There was a connection issue" << std::endl;
-	}
-	if(bytesRecv == 0)
-	{
-		std::cout << "The node sent a disconnected message" << std::endl;
-	}
-	// put information received in work response
-	pfp::WorkResponse result;
-	std::string s(buf);
-	std::stringstream ss;
-	ss.str(s);
-	ss >> result;
 
 	// add answer to answers_
-	answers_.push(result);
 
 	// put node back in freeNodes_
-	freeNodes_.push(node);
 	
 }
 
@@ -149,15 +118,10 @@ void localUser::workCoordinator()
 	while(stillWorking_)
 	{
 		// check for any free nodes
-		if(!freeNodes_.empty())
-		{
-			// there is a free node, assign it and start a thread to deal with it
-			pfp::remoteNode fNode = freeNodes_.front()
-			int newConn = connectToNode(fNode);
-			freeNodes_.pop(); // remove the first element 
-			
-			std::thread(&localUser::handleConnection, this, newConn, fNode).detach();
-		}
+
+		// if there is a free node, assign it and start a thread to deal with it
+
+		// connecToNode()
 
 
 	}
