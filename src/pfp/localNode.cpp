@@ -26,6 +26,8 @@ void localNode::main()
 	
 	std::thread corona(&localNode::corona, this); // kills you in 14 days
 	
+	std::cout << "All threads created" << std::endl;
+
 	// this is blocking so will not continue until lThread is done
     	lThread.join();	
 	workThread.join();
@@ -39,6 +41,7 @@ void localNode::corona()
 
 void localNode::work()
 {
+	std::cout << "Work thread started" << std::endl;
 	while(!shutdown)
 	{
 		while(jobs_.empty()); // wait until there are jobs to do
@@ -205,12 +208,13 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 		std::cout << "The client sent a disconnected message" << std::endl;
 	}
 	//std::cout << "Received: " << std::string(buf, 0, bytesRecv) << std::endl;
-	printf("localNode::handleUser Received: %s\n: ", buf);
+	printf("localNode::handleUser Received(%d): %s\n: ", bytesRecv, buf);
 
 	// Use recvd to put a WorkOrder in the queue
 	pfp::WorkOrder wo;
 	std::stringstream s;
 	s.str(buf);
+	printf("localNode::handleUser stringstream: %s\n", s.str().c_str());
 	s >> wo; // decode WorkOrder from input
 	std::cout << "localNode::handleUser Work Order: " << wo << std::endl;
 	jobs_.push(wo); // add to queue
