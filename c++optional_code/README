@@ -1,1 +1,0 @@
-This code currently runs a server that can connect to n clients and echoes back whatever is sent. That functionality can be changed by looking at the serverWork function
