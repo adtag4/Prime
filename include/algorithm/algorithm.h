@@ -75,7 +75,7 @@ bool inverse(alg::INT a, alg::INT n, alg::INT& dst);
 alg::INT gcd(alg::INT a, alg::INT b);
 
 std::ostream& operator << (std::ostream& out, alg::AlgStateData& data);
-std::istream& operator << (std::istream& in,  alg::AlgStateData& data);
+std::istream& operator >> (std::istream& in,  alg::AlgStateData& data);
 
 
 // Here are states for every algorithm: commonly incuded by user nodes (but they dont need algorithm objects)

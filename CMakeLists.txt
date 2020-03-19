@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.10)
 project(Prime)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 
 add_executable(Node
@@ -18,7 +18,7 @@ add_executable(Node
         src/QS/linear-algebra/gauss-elimination.cpp
         src/QS/linear-algebra/matrix.cpp
         src/QS/eratosthenes.cpp
-        src/QS/gmp-patch.c
+        src/QS/gmp-patch.cpp
         src/QS/math-utils.C
         src/QS/QS-parallel.cpp
         src/QS/QS.cpp
@@ -60,7 +60,7 @@ add_executable(User
         src/QS/linear-algebra/gauss-elimination.cpp
         src/QS/linear-algebra/matrix.cpp
         src/QS/eratosthenes.cpp
-        src/QS/gmp-patch.c
+        src/QS/gmp-patch.cpp
         src/QS/math-utils.C
         src/QS/QS-parallel.cpp
         src/QS/QS.cpp
@@ -95,5 +95,5 @@ target_include_directories(User PRIVATE src include src/algorithm src/pfp
         src/QS src/QS/linear-algebra)
 
 
-TARGET_LINK_LIBRARIES( Node pthread)
-TARGET_LINK_LIBRARIES( User pthread)
+TARGET_LINK_LIBRARIES( Node pthread gmp gmpxx mpfr omp)
+TARGET_LINK_LIBRARIES( User pthread gmp gmpxx mpfr omp)
