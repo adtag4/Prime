@@ -188,7 +188,7 @@ Point Point::add(const Point& p)
 		alg::INT m = (numerator * inv) % curve_->n_;
 
 		//DEBUG
-		std::cout << m << std::endl;
+		//:wqstd::cout << m << std::endl;
 
 
 		alg::INT newX = (m * m) - x_ - p.x_;
