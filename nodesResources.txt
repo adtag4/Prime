@@ -1,0 +1,4 @@
+www.alberttaglieri.us 10000
+node2.alberttaglieri.us 10000
+node3.alberttaglieri.us 10000
+node4.alberttaglieri.us 10000
