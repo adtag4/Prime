@@ -15,7 +15,7 @@ namespace pfp
 localUser::localUser(std::string filename) : 
 		stillWorking_(true),
 		rc_(gmp_randinit_default),
-		numRandomOrders_(100)
+		numRandomOrders_(10)
 {
 	// read in entries in file and store them in freeNodes_	
 	// create the file if it does not exist 
