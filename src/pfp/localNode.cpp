@@ -14,7 +14,7 @@ localNode::localNode(int port) : listenPort_(port)
 {
     	// create the listening thread which will run the whole life
 	shutdown_ = false;
-	cycles_ = 1000;
+	cycles_ = 100000;
 }
 
 void localNode::main()
@@ -54,7 +54,7 @@ void localNode::work()
 		jobs_.pop();
 		l.~unique_lock();
 		
-		std::cout << "localNode::work working on: " << currentJob << std::endl;
+		//std::cout << "localNode::work working on: " << currentJob << std::endl;
 
 		std::stringstream ss; // source string
 		std::stringstream as; // answer string
@@ -101,7 +101,7 @@ void localNode::work()
 		}
 		//std::cout << "localNode::work finished job" << std::endl;
 		pfp::WorkResponse wr(currentJob.getAlgorithm(), currentJob.getEncodedState(), as.str());
-		std::cout << "localNode::work response is: " << wr << std::endl;
+		//std::cout << "localNode::work response is: " << wr << std::endl;
 		
 		
 		std::unique_lock<std::mutex> lock(answer_mutex_);
@@ -233,7 +233,7 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 	s.str(buf);
 	//printf("localNode::handleUser stringstream: %s\n", s.str().c_str());
 	s >> wo; // decode WorkOrder from input
-	std::cout << "localNode::handleUser Work Order: " << wo << std::endl;
+	//std::cout << "localNode::handleUser Work Order: " << wo << std::endl;
 	std::unique_lock<std::mutex> l(jobs_mutex_);
 	jobs_.push(wo); // add to queue
 	l.~unique_lock();
@@ -244,7 +244,7 @@ void localNode::handleUser(int userSocket, struct sockaddr_in userAddr)
 		std::this_thread::sleep_for(std::chrono::seconds(2));
 		//std::cout << "localNode::handleUser No answer yet [0 / " << answers_.size() << "]" << std::endl;
 	}
-	std::cout << "localNode::handleUser found answer: " << answer << std::endl;
+	//std::cout << "localNode::handleUser found answer: " << answer << std::endl;
 	
 	// encode and send answer
 	std::stringstream ss;

@@ -40,7 +40,7 @@ localUser::localUser(std::string filename) :
    	}
 
 	rc_.seed(time(NULL));		
-	numRelsQS_ = 15;
+	numRelsQS_ = 300;
 }
 
 // the method that the main code will run
@@ -52,23 +52,31 @@ void localUser::main()
 	std::getline(std::cin, userNum); 
 	// initialize n_ and set it
 	n_.set_str(userNum, 10);
-	std::cout << "Your number is: " << n_ << std::endl;
+	std::cout << "Your number is: " << n_ <<  std::endl << "Beginning Solving Process now." << std::endl;
 	// create Coordinator and Manager threads 
 	std::thread manThread(&localUser::workManager, this); 
 	std::thread coordThread(&localUser::workCoordinator, this); 
-
+	// start timing 
+	auto start = std::chrono::high_resolution_clock::now();
 	
 
 	manThread.join();
 	coordThread.join();
+	// end timing
+	auto end = std::chrono::high_resolution_clock::now(); 
+	double program_time = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+
+	program_time = program_time/1000000000;
 
 	printSolution();
+	std::cout.precision(9);
+	std::cout << "PFP took " << std::fixed << program_time << " seconds to find factors." << std::endl;
 }
 
 // sets up socket connection
 int localUser::connectToNode(pfp::remoteNode node)
 {
-	std::cerr << "localUser::connectToNode(" << node.IP_ << ", " << node.port_ << ")" << std::endl;
+	//std::cerr << "localUser::connectToNode(" << node.IP_ << ", " << node.port_ << ")" << std::endl;
 	return node.makeConnectionTo();
 }
 
@@ -85,7 +93,7 @@ void localUser::workManager()
 	ss << ps;
 	pfp::WorkOrder firstwo(pfp::ALG::PR, ss.str());
 	jobs_.push(firstwo);
-	std::cout << "FIRST JOB:" << firstwo << std::endl;
+	//std::cout << "FIRST JOB:" << firstwo << std::endl;
 	
 	// Initial work order creation
 	for(auto x = 0; x < numRandomOrders_; x++)
@@ -94,8 +102,8 @@ void localUser::workManager()
 		pfp::WorkOrder ecmJob     = genRandomECMOrder(n_);
 		jobs_.push(pollardJob);
 		jobs_.push(ecmJob);
-		std::cout << "ADDED JOB:" << pollardJob << std::endl;
-		std::cout << "ADDED JOB:" << ecmJob << std::endl;
+		//std::cout << "ADDED JOB:" << pollardJob << std::endl;
+		//std::cout << "ADDED JOB:" << ecmJob << std::endl;
 	}
 	pfp::WorkOrder qsJob = genQSOrder(n_, numRelsQS_);
 	jobs_.push(qsJob);
@@ -104,7 +112,10 @@ void localUser::workManager()
 	while(stillWorking_)
 	{
 		// get first answer in queue
-		while(answers_.empty());
+		while(answers_.empty())
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
 		std::unique_lock<std::mutex> a(answers_mutex_);
 		pfp::WorkResponse wr = answers_.front();
 		answers_.pop();
@@ -128,7 +139,7 @@ void localUser::workManager()
 		pfp::WorkOrder newOrder = continueOrder(wr);
 		std::unique_lock<std::mutex> j(jobs_mutex_);
 		jobs_.push(newOrder); // add to queue
-		std::cout << "***ADDED CONTINUATION ORDER***:" << newOrder << std::endl;
+		//std::cout << "***ADDED CONTINUATION ORDER***:" << newOrder << std::endl;
 		j.~unique_lock();
 	}
 }
@@ -139,7 +150,7 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node, pfp::WorkOr
 	// send work order over connection
 	std::stringstream ss; 
 	ss << myJob;
-	std::cout << "JOB SENT IS:" << ss.str().c_str() << " with a size of:" << strlen(ss.str().c_str()) + 1 << std::endl;
+	//std::cout << "JOB SENT IS:" << ss.str().c_str() << " with a size of:" << strlen(ss.str().c_str()) + 1 << std::endl;
 	int bytesSent = send(socketFD, ss.str().c_str(), strlen(ss.str().c_str()) + 1, 0);
 	// std::cout << "USER SENT __" << bytesSent << "__ BYTES" << std::endl;
 	
@@ -167,7 +178,7 @@ void localUser::handleConnection(int socketFD, pfp::remoteNode node, pfp::WorkOr
 	ss2.str(s);
 	//std::cout << "SS2 IS:" << ss2.str().c_str() << std::endl;
 	ss2 >> result;
-	std::cout << "RESULT IS:" << result << std::endl;
+	//std::cout << "RESULT IS:" << result << std::endl;
 
 	// close socket after use
 	close(socketFD);
@@ -212,6 +223,11 @@ void localUser::workCoordinator()
 			j.~unique_lock();
 			//std::cout << "Remaining jobs in queue:" << jobs_.size() << std::endl; 
 			std::thread(&localUser::handleConnection, this, newConn, fNode, myJob).detach();
+		}
+		else
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
 		}
 
 
